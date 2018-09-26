@@ -1,0 +1,23 @@
+{
+  "name": "hayaben",
+  "version": "1.0.0",
+  "description": "funny cli",
+  "bin": "sh.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lepra-tsr/hayaben.git"
+  },
+  "keywords": [
+    "cli"
+  ],
+  "author": "lepra-tsr",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lepra-tsr/hayaben/issues"
+  },
+  "homepage": "https://github.com/lepra-tsr/hayaben#readme"
+}
