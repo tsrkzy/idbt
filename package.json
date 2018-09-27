@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/lepra-tsr/hayaben/issues"
   },
-  "homepage": "https://github.com/lepra-tsr/hayaben#readme"
+  "homepage": "https://github.com/lepra-tsr/hayaben#readme",
+  "devDependencies": {
+    "keypress": "^0.2.1",
+    "request": "^2.88.0"
+  }
 }
