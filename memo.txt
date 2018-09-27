@@ -1,0 +1,50 @@
+# init
+
+接続設定
+
+$ node idbt init
+email(tsrmix@gmail.com)? >
+password? >
+パスワードが不正です。
+(パスワードの検証、トークンの取得、所属とチャネルの取得)
+organization?
+> leprachaun
+channel?
+> freetalk
+> valuedesign
+
+# authentication test
+
+パスワードまたはトークンの検証
+
+$ node idbt --test
+if !token
+トークンの期限が切れました。パスワードを使用して再取得します。
+password? >
+パスワードが不正です。
+
+# change setting
+
+$ node idbt --channel freetalk
+
+# get list
+
+新着投稿を表示
+
+$ node idbt list
+$ node idbt list --channel freetalk
+
+# post
+
+投稿
+
+$ node idbt post "hello!"
+$ node idbt post --inquire "hello!"
+$ node idbt post --inquire --channel freetalk "hello!"
+$ node idbt post --file nippo.txt
+$ node idbt post --file nippo.txt --inquire
+$ node idbt post --file nippo.txt --inquire  --channel freetalk
+
+options: --(c)hannel, --(f)ile, --(t)est, --(i)nquire
+
+config: email, channel, token
