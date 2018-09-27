@@ -1,11 +1,107 @@
 #!/usr/bin/env node
 
 'use strict';
-const args = process.argv.slice(2);
 
-console.reset = () => {
-  return console.log('\x1B[2J\x1B[0f');
-}
+const args = process.argv.slice(2);
+const yargs = require('yargs')
+  .command({
+    command: 'init',
+    aliases: ['i'],
+    desc: 'configure',
+    builder: (yargs) => yargs,
+    handler: (argv) => {
+      console.log('$(idbt list) executed with', argv);
+    }
+  })
+  .command({
+    command: 'test',
+    aliases: ['t'],
+    desc: 'connection test',
+    builder: (yargs) => yargs,
+    handler: (argv) => {
+      console.log('connection test executed', argv);
+    }
+  })
+  .command({
+    command: 'list',
+    aliases: ['l'],
+    desc: 'show timeline',
+    builder: (yargs) => {
+      return yargs
+        .option('channel', {
+          alias: 'c',
+          describe: 'specify target channel',
+          type: 'string'
+        })
+        .option('watch', {
+          alias: 'w',
+          describe: 'watch mode',
+          type: 'boolean'
+        })
+        .group('channel', 'Flags:')
+        .example('$0 list', 'show CURRENT timeline')
+        .example('$0 list --channel hogehoge', 'show timeline of channel hogehoge')
+    },
+    handler: (argv) => {
+      console.log('$(idbt list) executed with', argv);
+    }
+  })
+  .command({
+    command: 'post',
+    aliases: ['p'],
+    desc: 'create new post',
+    builder: (yargs) => {
+      return yargs
+        .option('channel', {
+          alias: 'c',
+          describe: 'specify target channel',
+          type: 'string'
+        })
+        .option('yes', {
+          alias: 'y',
+          describe: 'mode "yesman". no longer confirm before posting.',
+          type: 'boolean'
+        })
+        .option('file', {
+          alias: 'f',
+          describe: 'read from file',
+          type: 'string'
+        })
+        .group(['channel', 'yes', 'file'], 'Flags:')
+        .example('$0 post "hello!"', 'post "hello!" to CURRENT channel? (y/n)')
+        .example('$0 post --yes "hello!"', 'post "hello!" to CURRENT channel')
+        .example('$0 post -y --channel hogehoge "hello!"', 'post "hello!" to channel hogehoge')
+        .example('$0 post -y --file ./draft.txt', 'post $(cat ./draft.txt) to CURRENT channel')
+    },
+    handler: (argv) => {
+      console.log('$(idbt post) executed with', argv);
+    }
+  })
+  .command({
+    command: 'cancel',
+    aliases: ['undo'],
+    desc: 'delete latest your post',
+    builder: (yargs) => {
+      return yargs
+        .option('yes', {
+          alias: 'y',
+          describe: 'mode "yesman". no longer confirm before deletion.',
+          type: 'boolean'
+        })
+        .group(['yes'], 'Flags:')
+        .example('$0 cancel', 'delete your last post start with "****"')
+        .example('$0 cancel --yes', 'delete your last post start with "****"? (y/n)')
+    },
+    handler: (argv) => {
+      console.log('$(idbt post) executed with', argv);
+    }
+  })
+  .example('$0 list', 'list example')
+  .usage('$0 [init|test|list|post|cancel] [--flags]')
+  .help('help')
+  .epilogue('need more help? see document on github.')
+  .version('1.0.0')
+  .argv;
 
 const request = require('request');
 const path = 'https://idobata.io/oauth/token';
@@ -29,9 +125,13 @@ const options = {
 }
 
 request(options, (error, response, body) => {
-  if (error) console.log(error);
-  console.log(response, body);
-  console.log('callback');
+  if (error) {
+    // console.log(error)
+    console.log('error');
+    return false;
+  };
+  // console.log(response, body);
+  console.log('success');
 });
 
 // curl https://idobata.io/oauth/token -H "Content-type: application/json" -d '{"grant_type":"password", "username":"tsrmix@gmail.com", "password":"" }' -x proxy.inb-eplus.jp:8080

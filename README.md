@@ -10,8 +10,19 @@ idobata unofficial cli
 ## library
 
 ### markup
+
 * chalk
+* terminal-link
 
 ### parser
 
-* meow?
+* yargs
+
+### suggest
+
+* omelette
+
+### etc
+
+* cli-table3
+* gradient-string

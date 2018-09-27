@@ -17,7 +17,7 @@ channel?
 
 パスワードまたはトークンの検証
 
-$ node idbt --test
+$ node idbt test
 if !token
 トークンの期限が切れました。パスワードを使用して再取得します。
 password? >
@@ -39,12 +39,17 @@ $ node idbt list --channel freetalk
 投稿
 
 $ node idbt post "hello!"
-$ node idbt post --inquire "hello!"
-$ node idbt post --inquire --channel freetalk "hello!"
+$ node idbt post -y "hello!"
+$ node idbt post -y --channel freetalk "hello!"
 $ node idbt post --file nippo.txt
-$ node idbt post --file nippo.txt --inquire
-$ node idbt post --file nippo.txt --inquire  --channel freetalk
+$ node idbt post --file nippo.txt -y
+$ node idbt post --file nippo.txt -y  --channel freetalk
 
-options: --(c)hannel, --(f)ile, --(t)est, --(i)nquire
+options: --(c)hannel, --(f)ile, -y(es)
 
 config: email, channel, token
+
+# cancel
+
+# node idbt cancel
+# node idbt cancel -y
