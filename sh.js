@@ -1,15 +1,28 @@
 #!/usr/bin/env node
 
 'use strict';
+const {
+  promisify: p
+} = require('util');
+const path = require('path');
+const homeDirPath = require('os').homedir();
+const confDirPath = path.join(homeDirPath, '.idbt');
+const mkdirp = p(require('mkdirp'));
 
-const args = process.argv.slice(2);
-const yargs = require('yargs')
+require('yargs')
   .command({
     command: 'init',
     aliases: ['i'],
     desc: 'configure',
     builder: (yargs) => yargs,
     handler: (argv) => {
+      mkdirp(confDirPath)
+        .then(() => {
+          console.log('mkdir ok! :', confDirPath);
+        }).catch((e) => {
+          console.log('init failed!');
+          throw e
+        })
       console.log('$(idbt list) executed with', argv);
     }
   })
@@ -102,35 +115,35 @@ const yargs = require('yargs')
   .version('1.0.0')
   .argv;
 
-const request = require('request');
-const path = 'https://idobata.io/oauth/token';
+// const request = require('request');
+// const path = 'https://idobata.io/oauth/token';
 
-const method = 'POST';
-const body = JSON.stringify({
-  "grant_type": "password",
-  "username": "tsrmix@gmail.com",
-  "password": args[0]
-});
-const contentType = 'application/json';
-const headers = {
-  'Content-Type': contentType,
-  'Content-Length': Buffer.byteLength(body)
-}
-const options = {
-  url: path,
-  method,
-  headers,
-  body,
-}
+// const method = 'POST';
+// const body = JSON.stringify({
+//   "grant_type": "password",
+//   "username": "tsrmix@gmail.com",
+//   "password": args[0]
+// });
+// const contentType = 'application/json';
+// const headers = {
+//   'Content-Type': contentType,
+//   'Content-Length': Buffer.byteLength(body)
+// }
+// const options = {
+//   url: path,
+//   method,
+//   headers,
+//   body,
+// }
 
-request(options, (error, response, body) => {
-  if (error) {
-    // console.log(error)
-    console.log('error');
-    return false;
-  };
-  // console.log(response, body);
-  console.log('success');
-});
+// request(options, (error, response, body) => {
+//   if (error) {
+//     // console.log(error)
+//     console.log('error');
+//     return false;
+//   };
+//   // console.log(response, body);
+//   console.log('success');
+// });
 
-// curl https://idobata.io/oauth/token -H "Content-type: application/json" -d '{"grant_type":"password", "username":"tsrmix@gmail.com", "password":"" }' -x proxy.inb-eplus.jp:8080
+// // curl https://idobata.io/oauth/token -H "Content-type: application/json" -d '{"grant_type":"password", "username":"tsrmix@gmail.com", "password":"" }' -x proxy.inb-eplus.jp:8080
