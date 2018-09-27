@@ -34,6 +34,10 @@ $ node idbt --channel freetalk
 $ node idbt list
 $ node idbt list --channel freetalk
 
+# ドラフト
+
+$ node idbt draft
+
 # post
 
 投稿
@@ -44,8 +48,6 @@ $ node idbt post -y --channel freetalk "hello!"
 $ node idbt post --file nippo.txt
 $ node idbt post --file nippo.txt -y
 $ node idbt post --file nippo.txt -y  --channel freetalk
-
-options: --(c)hannel, --(f)ile, -y(es)
 
 config: email, channel, token
 

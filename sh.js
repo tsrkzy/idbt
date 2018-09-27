@@ -26,53 +26,54 @@ const yargs = require('yargs')
     command: 'list',
     aliases: ['l'],
     desc: 'show timeline',
-    builder: (yargs) => {
-      return yargs
-        .option('channel', {
-          alias: 'c',
-          describe: 'specify target channel',
-          type: 'string'
-        })
-        .option('watch', {
-          alias: 'w',
-          describe: 'watch mode',
-          type: 'boolean'
-        })
-        .group('channel', 'Flags:')
-        .example('$0 list', 'show CURRENT timeline')
-        .example('$0 list --channel hogehoge', 'show timeline of channel hogehoge')
-    },
+    builder: (yargs) => yargs
+      .option('channel', {
+        alias: 'c',
+        describe: 'specify target channel',
+        type: 'string'
+      })
+      .group('channel', 'Flags:')
+      .example('$0 list', 'show CURRENT timeline')
+      .example('$0 list --channel hogehoge', 'show timeline of channel hogehoge'),
     handler: (argv) => {
       console.log('$(idbt list) executed with', argv);
+    }
+  })
+  .command({
+    command: 'draft',
+    aliases: ['d'],
+    desc: false,
+    builder: (yargs) => yargs,
+    handler: (argv) => {
+      console.log('$(idbt draft) executed with', argv);
     }
   })
   .command({
     command: 'post',
     aliases: ['p'],
     desc: 'create new post',
-    builder: (yargs) => {
-      return yargs
-        .option('channel', {
-          alias: 'c',
-          describe: 'specify target channel',
-          type: 'string'
-        })
-        .option('yes', {
-          alias: 'y',
-          describe: 'mode "yesman". no longer confirm before posting.',
-          type: 'boolean'
-        })
-        .option('file', {
-          alias: 'f',
-          describe: 'read from file',
-          type: 'string'
-        })
-        .group(['channel', 'yes', 'file'], 'Flags:')
-        .example('$0 post "hello!"', 'post "hello!" to CURRENT channel? (y/n)')
-        .example('$0 post --yes "hello!"', 'post "hello!" to CURRENT channel')
-        .example('$0 post -y --channel hogehoge "hello!"', 'post "hello!" to channel hogehoge')
-        .example('$0 post -y --file ./draft.txt', 'post $(cat ./draft.txt) to CURRENT channel')
-    },
+    builder: (yargs) => yargs
+      .option('channel', {
+        alias: 'c',
+        describe: 'specify target channel',
+        type: 'string'
+      })
+      .option('yes', {
+        alias: 'y',
+        describe: 'mode "yesman". no longer confirm before posting.',
+        type: 'boolean'
+      })
+      .option('file', {
+        alias: 'f',
+        describe: 'read from file',
+        default: '~/.idbt/draft.md',
+        type: 'string'
+      })
+      .group(['channel', 'yes', 'file'], 'Flags:')
+      .example('$0 post "hello!"', 'post "hello!" to CURRENT channel? (y/n)')
+      .example('$0 post --yes "hello!"', 'post "hello!" to CURRENT channel')
+      .example('$0 post -y --channel hogehoge "hello!"', 'post "hello!" to channel hogehoge')
+      .example('$0 post -y --file ./draft.txt', 'post $(cat ./draft.txt) to CURRENT channel'),
     handler: (argv) => {
       console.log('$(idbt post) executed with', argv);
     }
@@ -81,17 +82,15 @@ const yargs = require('yargs')
     command: 'cancel',
     aliases: ['undo'],
     desc: 'delete latest your post',
-    builder: (yargs) => {
-      return yargs
-        .option('yes', {
-          alias: 'y',
-          describe: 'mode "yesman". no longer confirm before deletion.',
-          type: 'boolean'
-        })
-        .group(['yes'], 'Flags:')
-        .example('$0 cancel', 'delete your last post start with "****"')
-        .example('$0 cancel --yes', 'delete your last post start with "****"? (y/n)')
-    },
+    builder: (yargs) => yargs
+      .option('yes', {
+        alias: 'y',
+        describe: 'mode "yesman". no longer confirm before deletion.',
+        type: 'boolean'
+      })
+      .group(['yes'], 'Flags:')
+      .example('$0 cancel', 'delete your last post start with "****"')
+      .example('$0 cancel --yes', 'delete your last post start with "****"? (y/n)'),
     handler: (argv) => {
       console.log('$(idbt post) executed with', argv);
     }

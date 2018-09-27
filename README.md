@@ -1,6 +1,6 @@
 # idbt
 
-idobata unofficial cli
+idobata unofficial cli tool
 
 ## function
 
@@ -9,20 +9,22 @@ idobata unofficial cli
 
 ## library
 
-### markup
-
 * chalk
 * terminal-link
-
-### parser
-
 * yargs
 
-### suggest
+# config files
 
-* omelette
+```
+$ idbt init # create directory ~/.idbt/ [config, draft.md]
+```
 
-### etc
+# usage
 
-* cli-table3
-* gradient-string
+```
+$ idbt init
+$ idbt test
+$ idbt list
+$ idbt post
+$ idbt cancel
+```
