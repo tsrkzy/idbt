@@ -99,36 +99,3 @@ require('yargs')
   .epilogue('need more help? see document on github.')
   .version('v0.1')
   .argv;
-
-// const request = require('request');
-// const path = 'https://idobata.io/oauth/token';
-
-// const method = 'POST';
-// const body = JSON.stringify({
-//   "grant_type": "password",
-//   "username": "tsrmix@gmail.com",
-//   "password": args[0]
-// });
-// const contentType = 'application/json';
-// const headers = {
-//   'Content-Type': contentType,
-//   'Content-Length': Buffer.byteLength(body)
-// }
-// const options = {
-//   url: path,
-//   method,
-//   headers,
-//   body,
-// }
-
-// request(options, (error, response, body) => {
-//   if (error) {
-//     // console.log(error)
-//     console.log('error');
-//     return false;
-//   };
-//   // console.log(response, body);
-//   console.log('success');
-// });
-
-// // curl https://idobata.io/oauth/token -H "Content-type: application/json" -d '{"grant_type":"password", "username":"tsrmix@gmail.com", "password":"" }' -x proxy.inb-eplus.jp:8080
