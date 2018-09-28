@@ -1,6 +1,4 @@
 'use strict';
-const request = require('request');
-const inquirer = require('inquirer')
 const {
   promisify: p
 } = require('util');
@@ -8,14 +6,40 @@ const {
   apiCall
 } = require('./apiCall');
 const {
-  checkConfigFileState,
   readConfig,
-  writeConfig
 } = require('./config');
 
 const listHandler = async (argv) => {
-  console.log(argv);
+  const config = await readConfig();
+  const {
+    current
+  } = config;
 
+  if (!current) {
+    console.log('NO current channel FOUND.');
+    return false;
+  }
+
+  const uri = current.links.messages;
+  const {
+    messages
+  } = await apiCall(uri);
+
+
+  const list = [];
+  for (let i = 0; i < messages.length; i++) {
+    const m = messages[i];
+    const message = {
+      id: m.id,
+      senderName: m.sender_name,
+      senderIconUrl: m.sender_icon_url,
+      createdAt: m.created_at,
+      html: m.body,
+      senderId: m.sender_id,
+    }
+    list.push(message);
+  }
+  console.log(list);
 }
 
 exports.listHandler = listHandler;

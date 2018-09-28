@@ -15,7 +15,7 @@ exports.apiCall = async (path) => {
   } = await readConfig();
 
   const method = 'GET';
-  const url = `https://idobata.io/api${path}`;
+  const url = /^https?/.test(path) ? path : `https://idobata.io/api${path}`;
   const headers = {
     'X-API-Token': accessToken,
     'User-Agent': 'idbt',

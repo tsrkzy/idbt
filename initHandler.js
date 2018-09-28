@@ -206,7 +206,7 @@ const roomSelectPrompt = async () => {
 
   const index = units.findIndex(u => u[1] === roomName)
 
-  config.current = rooms.slice(index, index + 1);
+  config.current = rooms.slice(index, index + 1)[0];
   writeConfig(config);
 }
 
