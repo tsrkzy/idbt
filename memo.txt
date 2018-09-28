@@ -1,3 +1,92 @@
+① /users > userId, (membership), joinを取得
+② /organizations > organizationId[]を取得
+③ /rooms > joinIdでフィルタして roomIdを取得
+
+* user.id
+* user.name
+
+* org.id
+* org.name
+* org.slug
+* org.links
+
+* room.id
+* room.name
+* room.links
+
+usr
+{
+"id": 7524,
+"name": "k_tashiro",
+"icon_url": "https://idobata.s3.amazonaws.com/uploads/user/icon/7524/elderSign.jpg",
+"status": "online",
+"email": "tsrmix@gmail.com",
+"channel_name": "presence-guy_7524",
+"created_at": "2015-10-01T02:53:42.175Z",
+"enter_behavior_desktop": "post",
+"enter_behavior_mobile": "enter",
+"use_markdown": true,
+"message_foldable": true,
+"receive_broadcast_mentions": true,
+"links":{"stars": "https://idobata.io/api/stars"},
+"membership_ids":[10716, 10660, 11126, 13949],
+"join_ids":[58234, 58235, 57310, 69094, 53651, 53653, 50805, 50804, 75568]
+}
+
+org
+{
+"id": 2257,
+"name": "LepraChat",
+"slug": "lepra-chat",
+"links":{
+  "bots": "https://idobata.io/api/organizations/2257/bots",
+  "invitations": "https://idobata.io/api/organizations/2257/organization_invitations",…}
+},
+
+
+{
+"id": 53651,
+"room_id": 5585,
+"guy_id": 7524
+},
+{
+"id": 53653,
+"room_id": 5633,
+"guy_id": 7524
+},
+{
+"id": 50804,
+"room_id": 4690,
+"guy_id": 7524
+},
+
+
+room
+{
+"id": 4690,
+"name": "freetalk",
+"description_source": "社内の**コミュニケーションの場**として自由に利用してください。\n\n#### Lepra関連のリンク\n\n* [レプラホーン株式会社](http://lepra.jp/)\n* [Aipo](http://aipo.tiger.lepra.jp/aipo/)\n* [勤怠確認](http://gorilla.lepra.jp/leptc/)\n* [レプラボサイト](https://lep-lab.herokuapp.com/)\n\n##### chat-room （どれも全員参加可です）\n* [hands up! 部屋](https://idobata.io/organizations/lepra-chat/rooms/idea/join_request/9ee9b575-bbd8-4f05-b807-ed267e395bc9) \n → そのアイデアプロジェクト化してみませんか？\n* [スナップオン部屋](https://idobata.io/organizations/lepra-chat/rooms/snap-on/join_request/42e16d78-1f6d-4d06-9bb2-10c42cb4812d) \n → そのスキル・知識を皆に共有しませんか？\n* [実況部屋](https://idobata.io/organizations/lepra-chat/rooms/live/join_request/88203adf-82b0-4340-ac3d-ca307e6d1b30) \n → 勉強会に参加したときのメモついでに！\n* [困った時の駆け込み部屋](https://idobata.io/organizations/lepra-chat/rooms/help_me/join_request/ffafe87f-5071-4cec-8ebf-8ecbae084ec5) \n → 技術的な質問など業務などで困った時に助けてもらいたい場合に！\n\n#### 書き方Tips\n\n* [Markdown記法 チートシート](http://qiita.com/Qiita/items/c686397e4a0f4f11683d)\n* [絵文字](http://www.emoji-cheat-sheet.com/)\n\n#### idobataクライアント\n##### 公式\n* [Idobata for iPhone / iPad](https://itunes.apple.com/jp/app/idobata/id798497158)\n* [Idobata for Android](https://play.google.com/store/apps/details?id=io.idobata.android)\n* [Idobata Notifier Chrome Extension](https://chrome.google.com/webstore/detail/idobata/likejalpbikjbknibnjmciebmobcjple)\n\n##### コミュニティ製作\n* [Butter(Mac OS X用)](https://github.com/harukasan/butter)\n\n#### 観るべき映画スプレッドシート\n* [共有シート](https://docs.google.com/spreadsheets/d/1FaftURNkGHE_VYD_OOdKjgGpLALL1nSUfKQAEup8LT0/edit?usp=sharing)",
+"description": "<p>社内の<strong>コミュニケーションの場</strong>として自由に利用してください。</p>\n<h4>Lepra関連のリンク</h4>\n<ul>\n<li><a href=\"http://lepra.jp/\" target=\"_blank\">レプラホーン株式会社</a></li>\n<li><a href=\"http://aipo.tiger.lepra.jp/aipo/\" target=\"_blank\">Aipo</a></li>\n<li><a href=\"http://gorilla.lepra.jp/leptc/\" target=\"_blank\">勤怠確認</a></li>\n<li><a href=\"https://lep-lab.herokuapp.com/\" target=\"_blank\">レプラボサイト</a></li>\n</ul>\n<h5>chat-room （どれも全員参加可です）</h5>\n<ul>\n<li>\n<a href=\"https://idobata.io/organizations/lepra-chat/rooms/idea/join_request/9ee9b575-bbd8-4f05-b807-ed267e395bc9\" target=\"_blank\">hands up! 部屋</a><br>\n→ そのアイデアプロジェクト化してみませんか？</li>\n<li>\n<a href=\"https://idobata.io/organizations/lepra-chat/rooms/snap-on/join_request/42e16d78-1f6d-4d06-9bb2-10c42cb4812d\" target=\"_blank\">スナップオン部屋</a><br>\n→ そのスキル・知識を皆に共有しませんか？</li>\n<li>\n<a href=\"https://idobata.io/organizations/lepra-chat/rooms/live/join_request/88203adf-82b0-4340-ac3d-ca307e6d1b30\" target=\"_blank\">実況部屋</a><br>\n→ 勉強会に参加したときのメモついでに！</li>\n<li>\n<a href=\"https://idobata.io/organizations/lepra-chat/rooms/help_me/join_request/ffafe87f-5071-4cec-8ebf-8ecbae084ec5\" target=\"_blank\">困った時の駆け込み部屋</a><br>\n→ 技術的な質問など業務などで困った時に助けてもらいたい場合に！</li>\n</ul>\n<h4>書き方Tips</h4>\n<ul>\n<li><a href=\"http://qiita.com/Qiita/items/c686397e4a0f4f11683d\" target=\"_blank\">Markdown記法 チートシート</a></li>\n<li><a href=\"http://www.emoji-cheat-sheet.com/\" target=\"_blank\">絵文字</a></li>\n</ul>\n<h4>idobataクライアント</h4>\n<h5>公式</h5>\n<ul>\n<li><a href=\"https://itunes.apple.com/jp/app/idobata/id798497158\" target=\"_blank\">Idobata for iPhone / iPad</a></li>\n<li><a href=\"https://play.google.com/store/apps/details?id=io.idobata.android\" target=\"_blank\">Idobata for Android</a></li>\n<li><a href=\"https://chrome.google.com/webstore/detail/idobata/likejalpbikjbknibnjmciebmobcjple\" target=\"_blank\">Idobata Notifier Chrome Extension</a></li>\n</ul>\n<h5>コミュニティ製作</h5>\n<ul>\n<li><a href=\"https://github.com/harukasan/butter\" target=\"_blank\">Butter(Mac OS X用)</a></li>\n</ul>\n<h4>観るべき映画スプレッドシート</h4>\n<ul>\n<li><a href=\"https://docs.google.com/spreadsheets/d/1FaftURNkGHE_VYD_OOdKjgGpLALL1nSUfKQAEup8LT0/edit?usp=sharing\" target=\"_blank\">共有シート</a></li>\n</ul>",
+"invitation_token": "74f96fe4-6b4a-4963-a7a6-c2599ee9085b",
+"invitation_policy": "invitation_enabled",
+"links":{"hook_endpoints": "https://idobata.io/api/rooms/4690/hook_endpoints", "messages": "https://idobata.io/api/rooms/4690/messages"…},
+"organization_id": 2257,
+"join_ids":[87524, 87532, 87604, 87664, 87689, 60634, 80383, 43079, 80813, 71625, 58711, 74156, 58807, 88406, 88403, 88443,…],
+"bot_join_ids":[]
+},
+
+
+# membership_ids
+
+user_idとorganization_idで一意に定まる。
+
+# join_ids
+
+user_idとroom_idで一意に定まる。
+
+
+
+
 # init
 
 接続設定

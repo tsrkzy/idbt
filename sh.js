@@ -2,14 +2,29 @@
 
 'use strict';
 
+const {
+  initHandler
+} = require('./initHandler')
 
 require('yargs')
+  .command({
+    command: 'config',
+    desc: 'display configure',
+    builder: (yargs) => yargs,
+    handler: async (argv) => {
+      const {
+        readConfig,
+      } = require('./config');
+      const config = await readConfig();
+      console.log(config)
+    }
+  })
   .command({
     command: 'init',
     aliases: ['i'],
     desc: 'configure',
     builder: (yargs) => yargs,
-    handler: require('./initHandler')
+    handler: initHandler,
   })
   .command({
     command: 'test',
