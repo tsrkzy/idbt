@@ -1,5 +1,6 @@
 'use strict';
 const request = require('request');
+const inquirer = require('inquirer')
 const {
   promisify: p
 } = require('util');
@@ -12,7 +13,7 @@ const {
   writeConfig
 } = require('./config');
 
-exports.initHandler = async (argv) => {
+const initHandler = async (argv) => {
 
   await checkConfigFileState();
 
@@ -54,9 +55,11 @@ exports.initHandler = async (argv) => {
     console.log(e);
     console.log('FAILED saving organization/rooms info.');
   }
+
+  await roomSelectPrompt();
 }
 
-async function fetchUserInfo() {
+const fetchUserInfo = async () => {
   const {
     users
   } = await apiCall('/users');
@@ -74,7 +77,8 @@ async function fetchUserInfo() {
   return user;
 }
 
-async function fetchOrganizationInfo() {
+
+const fetchOrganizationInfo = async () => {
   const {
     organizations
   } = await apiCall('/organizations');
@@ -93,7 +97,8 @@ async function fetchOrganizationInfo() {
   return myOrganizations;
 }
 
-async function fetchRoomInfo(userId) {
+
+const fetchRoomInfo = async (userId) => {
   const {
     joins,
     rooms,
@@ -122,6 +127,7 @@ async function fetchRoomInfo(userId) {
         id: r.id,
         name: r.name,
         links: r.links,
+        organizationId: r.organization_id,
       }
       myRooms.push(room);
       break;
@@ -131,8 +137,7 @@ async function fetchRoomInfo(userId) {
   return myRooms;
 }
 
-async function authPrompt() {
-  const inquirer = require('inquirer')
+const authPrompt = async () => {
   const answers = await inquirer
     .prompt([{
       type: 'input',
@@ -161,7 +166,51 @@ async function authPrompt() {
   return answers
 }
 
-async function fetchToken(username, password) {
+const roomSelectPrompt = async () => {
+  const config = await readConfig();
+  const {
+    organizations,
+    rooms
+  } = config;
+  const units = [];
+  for (let i = 0; i < rooms.length; i++) {
+    const {
+      name: roomName,
+      organizationId
+    } = rooms[i];
+    for (let j = 0; j < organizations.length; j++) {
+      const {
+        name: organizationName,
+        id
+      } = organizations[j];
+      if (id !== organizationId) continue;
+
+      const unitedName = `${i+1}: ${roomName}(${organizationName})`
+      units.push([i, unitedName]);
+      break;
+    }
+  }
+
+  const choices = units.map(u => u[1]);
+
+  const answers = await inquirer
+    .prompt([{
+      type: 'list',
+      name: 'room',
+      message: 'choose current room:',
+      choices,
+    }])
+  const {
+    room: roomName
+  } = answers;
+
+  const index = units.findIndex(u => u[1] === roomName)
+
+  config.current = rooms.slice(index, index + 1);
+  writeConfig(config);
+}
+
+const fetchToken = async (username, password) => {
   const request_p = p(request);
   const path = 'https://idobata.io/oauth/token';
 
@@ -202,3 +251,8 @@ async function fetchToken(username, password) {
 
   return access_token;
 }
+
+exports.fetchUserInfo = fetchUserInfo;
+exports.fetchOrganizationInfo = fetchOrganizationInfo;
+exports.fetchRoomInfo = fetchRoomInfo;
+exports.initHandler = initHandler;

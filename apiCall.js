@@ -32,8 +32,13 @@ exports.apiCall = async (path) => {
       body
     } = res;
     const json = JSON.parse(body);
+    if (!json) {
+      throw new Error('API returns null.')
+    }
+
     return json
   } catch (e) {
     console.log(e);
+    throw e
   }
 }

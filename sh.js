@@ -5,6 +5,12 @@
 const {
   initHandler
 } = require('./initHandler')
+const {
+  testHandler
+} = require('./testHandler')
+const {
+  listHandler
+} = require('./listHandler')
 
 require('yargs')
   .command({
@@ -31,9 +37,7 @@ require('yargs')
     aliases: ['t'],
     desc: 'connection test',
     builder: (yargs) => yargs,
-    handler: (argv) => {
-      console.log('connection test executed', argv);
-    }
+    handler: testHandler,
   })
   .command({
     command: 'list',
@@ -48,9 +52,7 @@ require('yargs')
       .group('channel', 'Flags:')
       .example('$0 list', 'show CURRENT timeline')
       .example('$0 list --channel hogehoge', 'show timeline of channel hogehoge'),
-    handler: (argv) => {
-      console.log('$(idbt list) executed with', argv);
-    }
+    handler: listHandler
   })
   .command({
     command: 'draft',
@@ -108,7 +110,6 @@ require('yargs')
       console.log('$(idbt post) executed with', argv);
     }
   })
-  .example('$0 list', 'list example')
   .usage('$0 [init|test|list|post|cancel] [--flags]')
   .help('help')
   .epilogue('need more help? see document on github.')
