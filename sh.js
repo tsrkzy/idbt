@@ -11,6 +11,9 @@ const {
 const {
   listHandler
 } = require('./listHandler')
+const {
+  postHandler
+} = require('./postHandler')
 
 require('yargs')
   .command({
@@ -89,9 +92,7 @@ require('yargs')
       .example('$0 post --yes "hello!"', 'post "hello!" to CURRENT channel')
       .example('$0 post -y --channel hogehoge "hello!"', 'post "hello!" to channel hogehoge')
       .example('$0 post -y --file ./draft.txt', 'post $(cat ./draft.txt) to CURRENT channel'),
-    handler: (argv) => {
-      console.log('$(idbt post) executed with', argv);
-    }
+    handler:postHandler,
   })
   .command({
     command: 'cancel',

@@ -3,7 +3,7 @@ const {
   readConfig,
 } = require('./config');
 
-exports.apiCall = async (path) => {
+exports.apiCall = async (path, method = 'GET', jsonObject) => {
   const {
     promisify: p
   } = require('util');
@@ -14,7 +14,6 @@ exports.apiCall = async (path) => {
     accessToken
   } = await readConfig();
 
-  const method = 'GET';
   const url = /^https?/.test(path) ? path : `https://idobata.io/api${path}`;
   const headers = {
     'X-API-Token': accessToken,
@@ -24,6 +23,11 @@ exports.apiCall = async (path) => {
     url,
     method,
     headers,
+  }
+
+  if (method === 'POST') {
+    headers['Content-Type'] = 'application/json'
+    options.body = JSON.stringify(jsonObject);
   }
 
   try {
