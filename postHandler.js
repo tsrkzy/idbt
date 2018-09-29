@@ -33,21 +33,30 @@ const postHandler = async (argv) => {
     /* TODO */
   }
 
-  const param = {
-    room_id,
-    source
-  }
-
   /* DEBUG STOPPER */
   if (room_id !== 6340) {
     console.log("カレントチャンネルがテスト用のものではありません");
     return false;
   }
 
+  const lastPostInfo = await postMessage(room_id, source);
+
+  try {
+    config.last = lastPostInfo;
+    await writeConfig(config);
+  } catch (e) {
+    console.log(`FAILED to save latest post.`)
+  }
+}
+
+const postMessage = async (room_id, source) => {
   try {
     const {
       message
-    } = await apiCall('/messages', 'POST', param)
+    } = await apiCall('/messages', 'POST', {
+      room_id,
+      source
+    })
     const last = {
       id: message.id,
       created_at: message.created_at,
@@ -56,25 +65,10 @@ const postHandler = async (argv) => {
       room_id: message.room_id,
     }
 
-    config.last = last;
+    return last
   } catch (e) {
     console.log(e);
   }
-
-  try {
-    await writeConfig(config);
-  } catch (e) {
-    console.log(`FAILED to save latest post.`)
-  }
 }
-// "message": {
-//   "id": 28197291,
-//   "sender_name": "k_tashiro",
-//   "sender_icon_url": "https://idobata.s3.amazonaws.com/uploads/user/icon/7524/elderSign.jpg",
-//   "created_at": "2018-09-29T12:08:28.670Z",
-//   "body": "<div>hogefuga</div>",
-//   "sender_id": 7524,
-//   "sender_type": "User",
-//   "room_id": 6340
-// }
+
 exports.postHandler = postHandler;

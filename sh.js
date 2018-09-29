@@ -41,13 +41,13 @@ require('yargs')
     builder: (yargs) => yargs,
     handler: initHandler,
   })
-    .command({
-      command: 'channel',
-      aliases: ['c'],
-      desc: 'change channel',
-      builder: (yargs) => yargs,
-      handler: channelHandler,
-    })
+  .command({
+    command: 'channel',
+    aliases: ['c'],
+    desc: 'change channel',
+    builder: (yargs) => yargs,
+    handler: channelHandler,
+  })
   .command({
     command: 'test',
     aliases: ['t'],
@@ -105,7 +105,7 @@ require('yargs')
       .example('$0 post --yes "hello!"', 'post "hello!" to CURRENT channel')
       .example('$0 post -y --channel hogehoge "hello!"', 'post "hello!" to channel hogehoge')
       .example('$0 post -y --file ./draft.txt', 'post $(cat ./draft.txt) to CURRENT channel'),
-    handler:postHandler,
+    handler: postHandler,
   })
   .command({
     command: 'cancel',
