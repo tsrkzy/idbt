@@ -6,6 +6,9 @@ const {
   initHandler
 } = require('./initHandler')
 const {
+  channelHandler
+} = require('./channelHandler')
+const {
   testHandler
 } = require('./testHandler')
 const {
@@ -14,6 +17,9 @@ const {
 const {
   postHandler
 } = require('./postHandler')
+const {
+  cancelHandler
+} = require('./cancelHandler')
 
 require('yargs')
   .command({
@@ -35,6 +41,13 @@ require('yargs')
     builder: (yargs) => yargs,
     handler: initHandler,
   })
+    .command({
+      command: 'channel',
+      aliases: ['c'],
+      desc: 'change channel',
+      builder: (yargs) => yargs,
+      handler: channelHandler,
+    })
   .command({
     command: 'test',
     aliases: ['t'],
@@ -107,9 +120,7 @@ require('yargs')
       .group(['yes'], 'Flags:')
       .example('$0 cancel', 'delete your last post start with "****"')
       .example('$0 cancel --yes', 'delete your last post start with "****"? (y/n)'),
-    handler: (argv) => {
-      console.log('$(idbt post) executed with', argv);
-    }
+    handler: cancelHandler,
   })
   .usage('$0 [init|test|list|post|cancel] [--flags]')
   .help('help')

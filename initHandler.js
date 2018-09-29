@@ -172,6 +172,11 @@ const roomSelectPrompt = async () => {
     organizations,
     rooms
   } = config;
+
+  if (!organizations || !rooms) {
+    throw new Error('config file is empty.');
+  }
+
   const units = [];
   for (let i = 0; i < rooms.length; i++) {
     const {
@@ -207,7 +212,7 @@ const roomSelectPrompt = async () => {
   const index = units.findIndex(u => u[1] === roomName)
 
   config.current = rooms.slice(index, index + 1)[0];
-  writeConfig(config);
+  await writeConfig(config);
 }
 
 const fetchToken = async (username, password) => {
@@ -255,4 +260,5 @@ const fetchToken = async (username, password) => {
 exports.fetchUserInfo = fetchUserInfo;
 exports.fetchOrganizationInfo = fetchOrganizationInfo;
 exports.fetchRoomInfo = fetchRoomInfo;
+exports.roomSelectPrompt = roomSelectPrompt;
 exports.initHandler = initHandler;

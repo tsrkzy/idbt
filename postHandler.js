@@ -14,7 +14,6 @@ const {
 } = require('./config');
 
 const postHandler = async (argv) => {
-  console.log(argv);
   const config = await readConfig();
   const {
     current
@@ -46,10 +45,26 @@ const postHandler = async (argv) => {
   }
 
   try {
-    const res = await apiCall('/messages', 'POST', param)
-    console.log(res);
+    const {
+      message
+    } = await apiCall('/messages', 'POST', param)
+    const last = {
+      id: message.id,
+      created_at: message.created_at,
+      body: message.body,
+      raw: source,
+      room_id: message.room_id,
+    }
+
+    config.last = last;
   } catch (e) {
     console.log(e);
+  }
+
+  try {
+    await writeConfig(config);
+  } catch (e) {
+    console.log(`FAILED to save latest post.`)
   }
 }
 // "message": {

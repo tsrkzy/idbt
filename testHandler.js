@@ -1,8 +1,5 @@
 'use strict';
 const {
-  readConfig
-} = require('./config');
-const {
   fetchUserInfo
 } = require('./initHandler');
 

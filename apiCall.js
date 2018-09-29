@@ -33,12 +33,14 @@ exports.apiCall = async (path, method = 'GET', jsonObject) => {
   try {
     const res = await request_p(options)
     const {
+      statusCode,
+      statusMessage,
       body
     } = res;
-    const json = JSON.parse(body);
-    if (!json) {
-      throw new Error('API returns null.')
+    if (statusCode >= 400) {
+      throw new Error(statusMessage);
     }
+    const json = JSON.parse(body);
 
     return json
   } catch (e) {
