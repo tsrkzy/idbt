@@ -1,6 +1,4 @@
 'use strict';
-const request = require('request');
-const inquirer = require('inquirer')
 const {
   promisify: p
 } = require('util');
@@ -8,9 +6,10 @@ const {
   apiCall
 } = require('./apiCall');
 const {
-  checkConfigFileState,
+  draftFilePath,
   readConfig,
-  writeConfig
+  writeConfig,
+  readDraft,
 } = require('./config');
 
 const postHandler = async (argv) => {
@@ -28,9 +27,10 @@ const postHandler = async (argv) => {
     id: room_id,
     name: roomName
   } = current;
-  const source = argv._[1];
+  const source = await getSource(argv);
+  console.log(source);
   if (!source) {
-    /* TODO */
+    return false
   }
 
   /* DEBUG STOPPER */
@@ -49,13 +49,37 @@ const postHandler = async (argv) => {
   }
 }
 
+async function getSource(argv) {
+  if (argv._[1]) {
+    return Promise.resolve(argv._[1]);
+  }
+
+  const child_process = require('child_process');
+  const editor = argv.emacs ? 'emacs' : 'vi'
+
+  const wordProcessor = child_process.spawn(editor, [draftFilePath], {
+    stdio: 'inherit'
+  });
+  return new Promise((resolve, reject) => {
+    wordProcessor.on('exit', async (e, code) => {
+      if (e) {
+        reject(e)
+      }
+      const draft = await readDraft()
+      resolve(draft);
+    })
+  })
+}
+
 const postMessage = async (room_id, source) => {
+
   try {
     const {
       message
     } = await apiCall('/messages', 'POST', {
       room_id,
-      source
+      source,
+      format: 'markdown',
     })
     const last = {
       id: message.id,

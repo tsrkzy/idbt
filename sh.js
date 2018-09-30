@@ -100,6 +100,11 @@ require('yargs')
         default: '~/.idbt/draft.md',
         type: 'string'
       })
+      .option('emacs', {
+        alias: 'e',
+        describe: 'open with emacs',
+        type: 'boolean'
+      })
       .group(['channel', 'yes', 'file'], 'Flags:')
       .example('$0 post "hello!"', 'post "hello!" to CURRENT channel? (y/n)')
       .example('$0 post --yes "hello!"', 'post "hello!" to CURRENT channel')

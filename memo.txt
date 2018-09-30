@@ -1,9 +1,9 @@
 # TODO
 
-* draft
-* confirm
 * multiline editor
+* confirm
 * loading spinner
+* draft
 
 
 # init

@@ -20,7 +20,7 @@ const p_writeFile = p(writeFile)
 const p_readFile = p(readFile)
 const mkdirp = p(require('mkdirp'));
 
-
+exports.draftFilePath = draftFilePath;
 exports.checkConfigFileState = async () => {
   /* ディレクトリ(~/.idbt)の作成 */
   try {
@@ -48,8 +48,6 @@ exports.checkConfigFileState = async () => {
   }
 }
 
-
-
 exports.readConfig = async () => {
   try {
     const jsonStr = await p_readFile(confFilePath, {
@@ -66,14 +64,36 @@ exports.readConfig = async () => {
   }
 }
 
-
-
 exports.writeConfig = async (jsonObject) => {
   try {
     await p_writeFile(confFilePath, JSON.stringify(jsonObject))
   } catch (e) {
     console.log(e)
     console.log(`CANNOT write configs to ${confFilePath}.`)
+    throw e
+  }
+}
+
+exports.readDraft = async ()=>{
+   try {
+     const fileContent = await p_readFile(draftFilePath, {
+       encoding: 'utf8',
+       flag: 'r'
+     })
+     return fileContent
+   } catch (e) {
+     console.log(e);
+     console.log(`CANNOT read ${draftFilePath}.`);
+     throw e
+   }
+}
+
+exports.clearDraft = async () => {
+  try {
+    await p_writeFile(draftFilePath, '')
+  } catch (e) {
+    console.log(e)
+    console.log(`CANNOT clear ${draftFilePath}.`)
     throw e
   }
 }
