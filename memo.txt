@@ -1,10 +1,11 @@
 # TODO
 
-* multiline editor
 * confirm
+* markup > node-html-parser
 * loading spinner
 * draft
-
+* publish
+* bundle
 
 # init
 

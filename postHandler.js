@@ -65,7 +65,7 @@ async function getSource(argv) {
     stdio: 'inherit'
   });
   return new Promise((resolve, reject) => {
-    wordProcessor.on('exit', async (e, code) => {
+    wordProcessor.on('exit', async (e) => {
       if (e) {
         reject(e)
       }
