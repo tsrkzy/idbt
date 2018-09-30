@@ -6,10 +6,11 @@ const {
   apiCall
 } = require('./apiCall');
 const {
-  draftFilePath,
+  confDirPath,
   readConfig,
   writeConfig,
-  readDraft,
+  readf,
+  removef,
 } = require('./config');
 
 const postHandler = async (argv) => {
@@ -57,7 +58,10 @@ async function getSource(argv) {
   const child_process = require('child_process');
   const editor = argv.emacs ? 'emacs' : 'vi'
 
-  const wordProcessor = child_process.spawn(editor, [draftFilePath], {
+  const timestamp = new Date().getTime()
+  const tmpFilePath = `${confDirPath}/tmp_${timestamp}`;
+
+  const wordProcessor = child_process.spawn(editor, [tmpFilePath], {
     stdio: 'inherit'
   });
   return new Promise((resolve, reject) => {
@@ -65,8 +69,14 @@ async function getSource(argv) {
       if (e) {
         reject(e)
       }
-      const draft = await readDraft()
-      resolve(draft);
+      try {
+        const draft = await readf(tmpFilePath);
+        await removef(tmpFilePath);
+        resolve(draft);
+      } catch (e) {
+        console.log('ABORT posting.');
+        resolve('');
+      }
     })
   })
 }
