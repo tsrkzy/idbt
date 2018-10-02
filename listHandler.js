@@ -8,6 +8,7 @@ const {
 const {
   readConfig,
 } = require('./config');
+const chalk = require('chalk');
 
 const listHandler = async (argv) => {
   const config = await readConfig();
@@ -37,9 +38,50 @@ const listHandler = async (argv) => {
       html: m.body,
       senderId: m.sender_id,
     }
-    list.push(message);
+    const tree = parseHtml(message.html);
+    console.log(chalk.whiteBright.bold(message.senderName), `: ${message.html}`)
   }
-  console.log(list);
 }
+
+function parseHtml(htmlWithNewLine) {
+  const {
+    parse
+  } = require('node-html-parser');
+  const root = parse(htmlWithNewLine);
+  const children = root.childNodes;
+  for(let i=0;i<children.length;i++){
+    const child = children[i];
+    recursiveRender(child);
+  }
+  // console.log('structuredText',root.structuredText);
+}
+
+function recursiveRender(node) {
+  const TEXT_NODE = 3;
+  if (node.nodeType === TEXT_NODE) {
+    console.log('innerText',node.text);
+  } else {
+    const children = node.childNodes;
+    for(let i=0;i<children.length;i++){
+      const child = children[i];
+      recursiveRender(child);
+    }
+  }
+}
+
+// k_tashiro : <p><code>this is test</code></p>
+// k_tashiro : <pre><code>this is test
+// aaa
+// </code></pre>
+
+// let a = {
+//   id: 28221086,
+//   senderName: 'r-shiroeda-ohyoi',
+//   senderIconUrl: 'https://idobata.s3.amazonaws.com/uploads/user/icon/6865/asdasd.png',
+//   createdAt: '2018-10-02T12:18:04.156Z',
+//   html: '<h2>今日の赤坂見附</h2>\n<ul>\n<li>二日目にしてこの時間に退勤</li>\n</ul>\n<p>もりもりさんと赤坂見附で普通に遭遇</p>',
+//   senderId: 6865
+// }
+
 
 exports.listHandler = listHandler;
