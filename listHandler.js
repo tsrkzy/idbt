@@ -47,22 +47,58 @@ function parseHtml(htmlWithNewLine) {
   const {
     parse
   } = require('node-html-parser');
-  const removedNewLines = htmlWithNewLine.replace('\n','');
-  const root = parse(removedNewLines);
+  const removedNewLines = htmlWithNewLine.replace('\n', '');
+  const root = parse(removedNewLines,{pre:true});
   recursiveRender(root)
+  // console.log('>>>', root.childNodes);
   // console.log('structuredText',root.structuredText);
 }
 
-function recursiveRender(node) {
-  const TEXT_NODE = 3;
-  if (node.nodeType === TEXT_NODE) {
-    console.log('innerText', typeof node.text, node.text);
-  } else {
-    const children = node.childNodes;
-    for (let i = 0; i < children.length; i++) {
-      const child = children[i];
-      recursiveRender(child);
+function recursiveRender(node, parentType = null) {
+  const {
+    nodeType,
+    tagName,
+  } = node;
+  let type = ((nodeType, tagName) => {
+    const TEXT_NODE = 3;
+    if (nodeType === TEXT_NODE) {
+      return 'TEXT';
     }
+
+    if (tagName === 'pre') {
+      return 'PRE'
+    }
+
+    if (tagName === 'code') {
+      return 'CODE'
+    }
+
+    return 'etc'
+  })(nodeType,tagName)
+  switch (type) {
+    case 'TEXT':
+      {
+        console.log('innerText', node.text);
+        break;
+      }
+    case 'CODE':
+      {
+        if (parentType === 'PRE') {
+          console.log('code block', node.text);
+        } else {
+          console.log('inline code block', node.text);
+        }
+        break;
+      }
+    case 'PRE':
+    default:
+      {
+        const children = node.childNodes;
+        for (let i = 0; i < children.length; i++) {
+          const child = children[i];
+          recursiveRender(child, type);
+        }
+      }
   }
 }
 
