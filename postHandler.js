@@ -34,12 +34,6 @@ const postHandler = async (argv) => {
     return false
   }
 
-  /* DEBUG STOPPER */
-  if (room_id !== 6340) {
-    console.log("カレントチャンネルがテスト用のものではありません");
-    return false;
-  }
-
   const lastPostInfo = await postMessage(room_id, source);
 
   try {
@@ -56,7 +50,7 @@ async function getSource(argv) {
   }
 
   const child_process = require('child_process');
-  const editor = argv.emacs ? 'emacs' : 'vi'
+  const editor = argv.emacs ? 'emacs' : 'vim'
 
   const timestamp = new Date().getTime()
   const tmpFilePath = `${confDirPath}/tmp_${timestamp}`;
