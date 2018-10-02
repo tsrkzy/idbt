@@ -47,22 +47,19 @@ function parseHtml(htmlWithNewLine) {
   const {
     parse
   } = require('node-html-parser');
-  const root = parse(htmlWithNewLine);
-  const children = root.childNodes;
-  for(let i=0;i<children.length;i++){
-    const child = children[i];
-    recursiveRender(child);
-  }
+  const removedNewLines = htmlWithNewLine.replace('\n','');
+  const root = parse(removedNewLines);
+  recursiveRender(root)
   // console.log('structuredText',root.structuredText);
 }
 
 function recursiveRender(node) {
   const TEXT_NODE = 3;
   if (node.nodeType === TEXT_NODE) {
-    console.log('innerText',node.text);
+    console.log('innerText', typeof node.text, node.text);
   } else {
     const children = node.childNodes;
-    for(let i=0;i<children.length;i++){
+    for (let i = 0; i < children.length; i++) {
       const child = children[i];
       recursiveRender(child);
     }
