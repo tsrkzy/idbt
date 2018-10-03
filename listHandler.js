@@ -133,8 +133,6 @@ function coloring(markdown) {
   }
   return colored.concat(attachments);
 }
-// ![](https://idobata.s3.amazonaws.com/uploads/attachment/image/1020192/023ed8fa-6f01-45af-876d-4c20e71e8887/8D6A7FE7-DB3E-4BD3-A600-12EAD592AC8E.jpeg)
-// [MtGArenaのオープンβ](https://magic.wizards.com/en/mtgarena)
 
 function compress(markdown) {
   const lines = markdown.split('\n');
@@ -159,15 +157,5 @@ function toMarkDown(html) {
   const markdown = td.turndown(html);
   return markdown
 }
-
-// let a = {
-//   id: 28221086,
-//   senderName: 'r-shiroeda-ohyoi',
-//   senderIconUrl: 'https://idobata.s3.amazonaws.com/uploads/user/icon/6865/asdasd.png',
-//   createdAt: '2018-10-02T12:18:04.156Z',
-//   html: '<h2>今日の赤坂見附</h2>\n<ul>\n<li>二日目にしてこの時間に退勤</li>\n</ul>\n<p>もりもりさんと赤坂見附で普通に遭遇</p>',
-//   senderId: 6865
-// }
-
 
 exports.listHandler = listHandler;

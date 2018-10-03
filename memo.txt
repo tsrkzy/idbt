@@ -1,11 +1,15 @@
 # TODO
 
 * confirm
-* markup > node-html-parser
 * loading spinner
 * draft
 * publish
 * bundle
+* strong, strikethrough, italic
+
+# DONE
+
+* markup > node-html-parser
 
 # init
 
