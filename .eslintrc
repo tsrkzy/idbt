@@ -1,0 +1,40 @@
+{
+  "plugins": [
+  ],
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "globals": {},
+  "rules": {
+    "semi": "error",
+    "no-var": [
+      "error"
+    ],
+    "indent": ["error", 2],
+    "react/display-name": 1,
+    "react/jsx-uses-vars": 1,
+    "comma-dangle": 0,
+    "arrow-body-style": "error",
+    "arrow-parens": "error",
+    "arrow-spacing": "error",
+    "generator-star-spacing": "error",
+    "no-duplicate-imports": "error",
+    "no-useless-computed-key": "error",
+    "no-useless-constructor": 0,
+    "no-useless-rename": "error",
+    "object-shorthand": "error",
+    "prefer-arrow-callback": "error",
+    "prefer-const": "error",
+    "prefer-rest-params": "error",
+    "prefer-spread": "error",
+    "prefer-template": "error",
+    "rest-spread-spacing": "error",
+    "template-curly-spacing": "error",
+    "yield-star-spacing": "error"
+  }
+}

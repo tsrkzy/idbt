@@ -10,6 +10,7 @@ const {
 } = require('./config');
 const chalk = require('chalk');
 const TurnDown = require('turndown')
+const terminalLink = require('terminal-link');
 
 const listHandler = async (argv) => {
   const config = await readConfig();
@@ -27,8 +28,6 @@ const listHandler = async (argv) => {
     messages
   } = await apiCall(uri);
 
-
-  const list = [];
   for (let i = 0; i < messages.length; i++) {
     const m = messages[i];
     const message = {
@@ -49,7 +48,7 @@ const listHandler = async (argv) => {
       console.log(chalk.bold(`${message.senderName}:`))
       for (let i = 0; i < container.length; i++) {
         const c = container[i];
-        console.log(`| ${c}`);
+        console.log(`${((i + 1) === container.length) ? '`' : '|'} ${c}`);
       }
     }
   }
@@ -59,6 +58,8 @@ function coloring(markdown) {
   const lines = markdown.split('\n');
   const colored = [];
   let inCodeBlock = false;
+  const attachments = [];
+  let attachIndex = 0;
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
     /* code block check */
@@ -86,21 +87,51 @@ function coloring(markdown) {
     }
     line = line.replace('__BACK_QUOTE', '\\`')
 
-    /* bullet */
-    line = line.replace(/^(\s*)([\+\*])(\s+)/, (_, ...hit) => {
-      return `${hit[0]}${chalk.cyan(hit[1])}${hit[2]}`
+    /* blockquote */
+    line = line.replace(/^(\s*)\>\s/g, (_, ...hit) => {
+      return `${hit[0]}${chalk.bgBlackBright('>')} `
     })
-    /* bullet */
+
+    /* link */
+    const linkPattern = /(?<!\!)\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g
+    line = line.replace(linkPattern, (_, ...hit) => {
+      attachIndex++;
+      const href = terminalLink('LINK', hit[1]);
+      const link = `[${attachIndex}] ${href} - ${hit[0]}`;
+      attachments.push(link);
+      return `[${chalk.magentaBright(hit[0])}](${chalk.magentaBright(`*${attachIndex}`)})`
+    })
+
+    /* image */
+    const imagePattern = /\!\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g
+    line = line.replace(imagePattern, (_, ...hit) => {
+      attachIndex++;
+      const src = terminalLink('IMAGE', hit[1]);
+      const img = `[${attachIndex}] ${src}`;
+      attachments.push(img);
+      return `[${chalk.cyanBright(hit[0] || 'IMAGE')}](${chalk.cyanBright(`*${attachIndex}`)})`
+    })
+
+    /* mention */
+    line = line.replace(/@([0-9a-zA-Z\-_]+)/g, (_, ...hit) => {
+      return `${chalk.bold.yellowBright('@')}${chalk.yellowBright(hit[0])}`
+    })
+
+    /* bullet list */
+    line = line.replace(/^(\s*)([\+\*])(\s+)/, (_, ...hit) => {
+      return `${hit[0]}${chalk.bold.cyan(hit[1])}${hit[2]}`
+    })
+    /* order list */
     line = line.replace(/^(\s*)(\d+\.)(\s+)/, (_, ...hit) => {
       return `${hit[0]}${chalk.cyan(hit[1])}${hit[2]}`
     })
     /* header */
-    line = line.replace(/^(#+)(\s+.*)$/, (_, ...hit) => {
-      return `${chalk.magentaBright(hit[0])}${hit[1]}`
+    line = line.replace(/^(#+)/, (_, ...hit) => {
+      return `${chalk.magentaBright(hit[0])}`
     })
     colored.push(line);
   }
-  return colored;
+  return colored.concat(attachments);
 }
 // ![](https://idobata.s3.amazonaws.com/uploads/attachment/image/1020192/023ed8fa-6f01-45af-876d-4c20e71e8887/8D6A7FE7-DB3E-4BD3-A600-12EAD592AC8E.jpeg)
 // [MtGArenaのオープンβ](https://magic.wizards.com/en/mtgarena)
@@ -119,8 +150,8 @@ function compress(markdown) {
 }
 
 function toMarkDown(html) {
-  // html = html.replace(/\n/g, '');
   const td = new TurnDown({
+    headingStyle: 'atx',
     codeBlockStyle: 'fenced',
     bulletListMarker: '+'
   });
@@ -128,116 +159,6 @@ function toMarkDown(html) {
   const markdown = td.turndown(html);
   return markdown
 }
-
-
-function parseHtml(htmlWithNewLine) {
-  const {
-    parse
-  } = require('node-html-parser');
-  const root = parse(htmlWithNewLine, {
-    pre: true
-  });
-  // console.log(root.structure);
-  const container = [];
-  recursiveRender(root, container, 0)
-  return container
-}
-
-function recursiveRender(node, container, index, parentType = null) {
-  const {
-    nodeType,
-    tagName,
-    text,
-    childNodes,
-  } = node;
-  // console.log(nodeType, tagName, text);
-
-  let type = ((nodeType, tagName) => {
-    const TEXT_NODE = 3;
-    if (nodeType === TEXT_NODE && parentType === 'CODE') {
-      return 'INLINE_CODE';
-    }
-
-    if (nodeType === TEXT_NODE) {
-      return 'TEXT';
-    }
-
-    if (tagName === 'pre') {
-      return 'CODE_BLOCK'
-    }
-
-    if (tagName === 'ul') {
-      return 'LIST_WRAPPER'
-    }
-
-    if (tagName === 'li') {
-      return 'BULLET'
-    }
-
-    if (tagName === 'code') {
-      return 'CODE'
-    }
-
-    return 'etc'
-  })(nodeType, tagName);
-
-  switch (type) {
-    case 'TEXT':
-      {
-        if (parentType === 'LIST_WRAPPER' || parentType === 'BULLET') {
-          break;
-        }
-        // console.log(`innerText:${text}`);
-        const t = text.replace('\n', '')
-        if (t === '') {
-          break;
-        }
-        container.push(t);
-        break;
-      }
-    case 'INLINE_CODE':
-      {
-        // console.log(chalk.bgBlackBright(text));
-        const t = text.replace('\n', '')
-        container.push(chalk.bgBlackBright(t))
-        break;
-      }
-    case 'CODE_BLOCK':
-      {
-        let t = text.replace(/^\<code\>/, '')
-        t = t.replace(/\n*\<\/code\>$/, '')
-        // console.log(chalk.bgBlackBright(t));
-        container.push(chalk.bgBlackBright(t));
-        break;
-      }
-    case 'BULLET':
-      {
-
-        let t = text
-        if (index <= 1) {
-          t = t.replace(/^\n/, '');
-        }
-        t = t.replace(/\n/g, '\n   ');
-        t = `${chalk.cyan(' +')} ${t}`
-        container.push(t)
-        break;
-      }
-    case 'LIST_WRAPPER':
-    default:
-      {
-        const children = childNodes;
-        for (let i = 0; i < children.length; i++) {
-          const child = children[i];
-          recursiveRender(child, container, i, type);
-        }
-      }
-  }
-}
-
-// k_tashiro : <p><code>this is test</code></p>
-// k_tashiro : <pre><code>this is test
-// aaa
-// </code></pre>
 
 // let a = {
 //   id: 28221086,
