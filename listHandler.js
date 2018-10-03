@@ -38,8 +38,17 @@ const listHandler = async (argv) => {
       html: m.body,
       senderId: m.sender_id,
     }
-    const tree = parseHtml(message.html);
-    console.log(chalk.whiteBright.bold(message.senderName), `: ${message.html}`)
+    const container = parseHtml(message.html);
+    if (container.length === 1) {
+      console.log(`${chalk.whiteBright.bold(message.senderName)}: ${container[0]}`)
+    } else {
+      console.log(`${chalk.whiteBright.bold(message.senderName)}: |+`)
+      for (let i = 0; i < container.length; i++) {
+        const c = container[i];
+        console.log(c);
+      }
+    }
+    // console.log(message.html,container);
   }
 }
 
@@ -47,26 +56,44 @@ function parseHtml(htmlWithNewLine) {
   const {
     parse
   } = require('node-html-parser');
-  const removedNewLines = htmlWithNewLine.replace('\n', '');
-  const root = parse(removedNewLines,{pre:true});
-  recursiveRender(root)
-  // console.log('>>>', root.childNodes);
-  // console.log('structuredText',root.structuredText);
+  const root = parse(htmlWithNewLine, {
+    pre: true
+  });
+  // console.log(root.structure);
+  const container = [];
+  recursiveRender(root, container, 0)
+  return container
 }
 
-function recursiveRender(node, parentType = null) {
+function recursiveRender(node, container, index, parentType = null) {
   const {
     nodeType,
     tagName,
+    text,
+    childNodes,
   } = node;
+  // console.log(nodeType, tagName, text);
+
   let type = ((nodeType, tagName) => {
     const TEXT_NODE = 3;
+    if (nodeType === TEXT_NODE && parentType === 'CODE') {
+      return 'INLINE_CODE';
+    }
+
     if (nodeType === TEXT_NODE) {
       return 'TEXT';
     }
 
     if (tagName === 'pre') {
-      return 'PRE'
+      return 'CODE_BLOCK'
+    }
+
+    if (tagName === 'ul') {
+      return 'LIST_WRAPPER'
+    }
+
+    if (tagName === 'li') {
+      return 'BULLET'
     }
 
     if (tagName === 'code') {
@@ -74,29 +101,56 @@ function recursiveRender(node, parentType = null) {
     }
 
     return 'etc'
-  })(nodeType,tagName)
+  })(nodeType, tagName);
+
   switch (type) {
     case 'TEXT':
       {
-        console.log('innerText', node.text);
-        break;
-      }
-    case 'CODE':
-      {
-        if (parentType === 'PRE') {
-          console.log('code block', node.text);
-        } else {
-          console.log('inline code block', node.text);
+        if (parentType === 'LIST_WRAPPER' || parentType === 'BULLET') {
+          break;
         }
+        // console.log(`innerText:${text}`);
+        const t = text.replace('\n', '')
+        if (t === '') {
+          break;
+        }
+        container.push(t);
         break;
       }
-    case 'PRE':
+    case 'INLINE_CODE':
+      {
+        // console.log(chalk.bgBlackBright(text));
+        const t = text.replace('\n', '')
+        container.push(chalk.bgBlackBright(t))
+        break;
+      }
+    case 'CODE_BLOCK':
+      {
+        let t = text.replace(/^\<code\>/, '')
+        t = t.replace(/\n*\<\/code\>$/, '')
+        // console.log(chalk.bgBlackBright(t));
+        container.push(chalk.bgBlackBright(t));
+        break;
+      }
+    case 'BULLET':
+      {
+
+        let t = text
+        if (index <= 1) {
+          t = t.replace(/^\n/, '');
+        }
+        t = t.replace(/\n/g, '\n   ');
+        t = `${chalk.cyan(' +')} ${t}`
+        container.push(t)
+        break;
+      }
+    case 'LIST_WRAPPER':
     default:
       {
-        const children = node.childNodes;
+        const children = childNodes;
         for (let i = 0; i < children.length; i++) {
           const child = children[i];
-          recursiveRender(child, type);
+          recursiveRender(child, container, i, type);
         }
       }
   }
