@@ -9,6 +9,7 @@ const {
   readConfig,
 } = require('./config');
 const chalk = require('chalk');
+const TurnDown = require('turndown')
 
 const listHandler = async (argv) => {
   const config = await readConfig();
@@ -38,19 +39,96 @@ const listHandler = async (argv) => {
       html: m.body,
       senderId: m.sender_id,
     }
-    const container = parseHtml(message.html);
+    let md = toMarkDown(message.html);
+    md = compress(md);
+    const container = coloring(md);
+
     if (container.length === 1) {
-      console.log(`${chalk.whiteBright.bold(message.senderName)}: ${container[0]}`)
+      console.log(`${chalk.bold(`${message.senderName}:`)} ${container[0]}`)
     } else {
-      console.log(`${chalk.whiteBright.bold(message.senderName)}: |+`)
+      console.log(chalk.bold(`${message.senderName}:`))
       for (let i = 0; i < container.length; i++) {
         const c = container[i];
-        console.log(c);
+        console.log(`| ${c}`);
       }
     }
-    // console.log(message.html,container);
   }
 }
+
+function coloring(markdown) {
+  const lines = markdown.split('\n');
+  const colored = [];
+  let inCodeBlock = false;
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    /* code block check */
+    if (line === '```') {
+      inCodeBlock = !inCodeBlock;
+      colored.push(inCodeBlock ? chalk.bgBlackBright(line) : '');
+      continue;
+    }
+    /* code block */
+    if (inCodeBlock) {
+      colored.push(chalk.bgBlackBright(`   ${line}`));
+      continue;
+    }
+
+    /* inline code */
+    line = line.replace('\\`', '__BACK_QUOTE');
+    if (line.indexOf('`') !== -1 && line.indexOf('`') !== line.lastIndexOf('`')) {
+      const lines = line.split('`')
+      const a = [];
+      for (let i = 0; i < lines.length; i++) {
+        const l = lines[i];
+        a.push((i % 2 === 0) ? l : chalk.bgBlackBright(l))
+      }
+      line = a.join('`');
+    }
+    line = line.replace('__BACK_QUOTE', '\\`')
+
+    /* bullet */
+    line = line.replace(/^(\s*)([\+\*])(\s+)/, (_, ...hit) => {
+      return `${hit[0]}${chalk.cyan(hit[1])}${hit[2]}`
+    })
+    /* bullet */
+    line = line.replace(/^(\s*)(\d+\.)(\s+)/, (_, ...hit) => {
+      return `${hit[0]}${chalk.cyan(hit[1])}${hit[2]}`
+    })
+    /* header */
+    line = line.replace(/^(#+)(\s+.*)$/, (_, ...hit) => {
+      return `${chalk.magentaBright(hit[0])}${hit[1]}`
+    })
+    colored.push(line);
+  }
+  return colored;
+}
+// ![](https://idobata.s3.amazonaws.com/uploads/attachment/image/1020192/023ed8fa-6f01-45af-876d-4c20e71e8887/8D6A7FE7-DB3E-4BD3-A600-12EAD592AC8E.jpeg)
+// [MtGArenaのオープンβ](https://magic.wizards.com/en/mtgarena)
+
+function compress(markdown) {
+  const lines = markdown.split('\n');
+  const compressed = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line) {
+      continue;
+    }
+    compressed.push(line);
+  }
+  return compressed.join('\n')
+}
+
+function toMarkDown(html) {
+  // html = html.replace(/\n/g, '');
+  const td = new TurnDown({
+    codeBlockStyle: 'fenced',
+    bulletListMarker: '+'
+  });
+  td.keep(['pre', 'code']);
+  const markdown = td.turndown(html);
+  return markdown
+}
+
 
 function parseHtml(htmlWithNewLine) {
   const {
