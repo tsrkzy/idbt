@@ -1,6 +1,6 @@
 {
   "name": "idbt",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "idobata unofficial cli client",
   "bin": "sh.js",
   "main": "index.js",
@@ -21,8 +21,7 @@
     "url": "https://github.com/lepra-tsr/idbt/issues"
   },
   "homepage": "https://github.com/lepra-tsr/idbt#readme",
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "dependencies": {
     "chalk": "^2.4.1",
     "inquirer": "^6.2.0",
