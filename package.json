@@ -1,6 +1,6 @@
 {
   "name": "idbt",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "funny cli",
   "bin": "sh.js",
   "main": "index.js",
@@ -12,9 +12,10 @@
     "url": "git+https://github.com/lepra-tsr/idbt.git"
   },
   "keywords": [
-    "cli"
+    "cli",
+    "idobata"
   ],
-  "author": "lepra-tsr",
+  "author": "lepra-tsr <tsrmix@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/lepra-tsr/idbt/issues"
