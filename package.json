@@ -2,9 +2,10 @@
   "name": "idbt",
   "version": "0.0.2",
   "description": "idobata unofficial cli client",
-  "bin": "bin.js",
-  "main": "index.js",
+  "bin": "bin.bundle.js",
+  "main": "bin.bundle.js",
   "scripts": {
+    "build": "rollup --config rollup.config.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,7 +22,10 @@
     "url": "https://github.com/lepra-tsr/idbt/issues"
   },
   "homepage": "https://github.com/lepra-tsr/idbt#readme",
-  "devDependencies": {},
+  "devDependencies": {
+    "rollup-plugin-commonjs": "^9.1.8",
+    "rollup-plugin-node-resolve": "^3.4.0"
+  },
   "dependencies": {
     "chalk": "^2.4.1",
     "inquirer": "^6.2.0",

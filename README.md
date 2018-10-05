@@ -6,19 +6,25 @@ this is dev version.
 
 idobata unofficial cli tool.
 
-プログラマのためのSNS [Idobata](https://idobata.io/ja/home) の非公式CLIクライアントです。
+プログラマのためのSNS [Idobata](https://idobata.io/ja/home) の **非公式** CLIクライアントです。
 
-## function
+# function
 
 * show timeline 
 * post message
 
 チャンネルを選択し、タイムラインの表示とチャットの投稿が可能です。
 
+# install
+
+```
+$ npm install --global idbt # recommend: to global.
+```
+
+グローバルへインストールして使用することを想定しています。
+
 # usage
 
-開発版です。エントリーポイントは `/sh.js` です。
-`node {PATH_idbt}/sh.js init` のようにして実行してください。
 ユーザディレクトリの直下に、設定ディレクトリ `~/.idbt` を作成します。
 アンインストールの際は、お手数ですが手動で削除してください。
 
