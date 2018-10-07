@@ -11,6 +11,7 @@ const {
 const chalk = require('chalk');
 const TurnDown = require('turndown')
 const terminalLink = require('terminal-link');
+const { spin } = require('./spinner');
 
 const listHandler = async (argv) => {
   const config = await readConfig();
@@ -23,10 +24,11 @@ const listHandler = async (argv) => {
     return false;
   }
 
-  const uri = current.links.messages;
-  const {
-    messages
-  } = await apiCall(uri);
+  const { name, links } = current;
+  const uri = links.messages;
+
+  const { messages } = await spin({ msg: ` LOADING: ${name}` }, apiCall.bind(this, uri))
+  console.log('\r');
 
   for (let i = 0; i < messages.length; i++) {
     const m = messages[i];
@@ -62,6 +64,7 @@ function coloring(markdown) {
   let attachIndex = 0;
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
+
     /* code block check */
     if (line === '```') {
       inCodeBlock = !inCodeBlock;
@@ -113,7 +116,7 @@ function coloring(markdown) {
     })
 
     /* mention */
-    line = line.replace(/@([0-9a-zA-Z\-_]+)/g, (_, ...hit) => {
+    line = line.replace(/\*\*@([0-9a-zA-Z\-_]+)\*\*/g, (_, ...hit) => {
       return `${chalk.bold.yellowBright('@')}${chalk.yellowBright(hit[0])}`
     })
 

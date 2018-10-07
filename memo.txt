@@ -6,6 +6,7 @@
 * publish
 * bundle
 * strong, strikethrough, italic
+* emoji
 
 # DONE
 
