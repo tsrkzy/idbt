@@ -4,22 +4,22 @@
 
 const {
   initHandler
-} = require('./initHandler')
+} = require('./initHandler');
 const {
   channelHandler
-} = require('./channelHandler')
+} = require('./channelHandler');
 const {
   testHandler
-} = require('./testHandler')
+} = require('./testHandler');
 const {
   listHandler
-} = require('./listHandler')
+} = require('./listHandler');
 const {
   postHandler
-} = require('./postHandler')
+} = require('./postHandler');
 const {
   cancelHandler
-} = require('./cancelHandler')
+} = require('./cancelHandler');
 
 require('yargs')
   .command({
@@ -31,7 +31,7 @@ require('yargs')
         readConfig,
       } = require('./config');
       const config = await readConfig();
-      console.log(config)
+      console.log(config);
     }
   })
   .command({

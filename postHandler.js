@@ -1,10 +1,6 @@
 'use strict';
-const {
-  promisify: p
-} = require('util');
-const {
-  apiCall
-} = require('./apiCall');
+const { promisify: p } = require('util');
+const { apiCall } = require('./apiCall');
 const {
   confDirPath,
   readConfig,
@@ -12,12 +8,11 @@ const {
   readf,
   removef,
 } = require('./config');
+const { spin } = require('./spinner');
 
 const postHandler = async (argv) => {
   const config = await readConfig();
-  const {
-    current
-  } = config
+  const { current } = config;
 
   if (!current) {
     console.log('No current channel FOUND.');
@@ -31,7 +26,7 @@ const postHandler = async (argv) => {
   const source = await getSource(argv);
   console.log(source);
   if (!source) {
-    return false
+    return false;
   }
 
   const lastPostInfo = await postMessage(room_id, source);
@@ -40,9 +35,9 @@ const postHandler = async (argv) => {
     config.last = lastPostInfo;
     await writeConfig(config);
   } catch (e) {
-    console.log(`FAILED to save latest post.`)
+    console.log(`FAILED to save latest post.`);
   }
-}
+};
 
 async function getSource(argv) {
   if (argv._[1]) {
@@ -50,9 +45,9 @@ async function getSource(argv) {
   }
 
   const child_process = require('child_process');
-  const editor = argv.emacs ? 'emacs' : 'vim'
+  const editor = argv.emacs ? 'emacs' : 'vim';
 
-  const timestamp = new Date().getTime()
+  const timestamp = new Date().getTime();
   const tmpFilePath = `${confDirPath}/tmp_${timestamp}`;
 
   const wordProcessor = child_process.spawn(editor, [tmpFilePath], {
@@ -61,7 +56,7 @@ async function getSource(argv) {
   return new Promise((resolve, reject) => {
     wordProcessor.on('exit', async (e) => {
       if (e) {
-        reject(e)
+        reject(e);
       }
       try {
         const draft = await readf(tmpFilePath);
@@ -71,32 +66,30 @@ async function getSource(argv) {
         console.log('ABORT posting.');
         resolve('');
       }
-    })
-  })
+    });
+  });
 }
 
 const postMessage = async (room_id, source) => {
 
   try {
-    const {
-      message
-    } = await apiCall('/messages', 'POST', {
+    const { message } = await spin({ msg: ' NOW POSTING' }, apiCall.bind(this, '/messages', 'POST', {
       room_id,
       source,
       format: 'markdown',
-    })
+    }));
     const last = {
       id: message.id,
       created_at: message.created_at,
       body: message.body,
       raw: source,
       room_id: message.room_id,
-    }
+    };
 
-    return last
+    return last;
   } catch (e) {
     console.log(e);
   }
-}
+};
 
 exports.postHandler = postHandler;

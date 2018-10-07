@@ -11,6 +11,6 @@ const {
 
 const channelHandler = async (argv) => {
   roomSelectPrompt();
-}
+};
 
 exports.channelHandler = channelHandler;

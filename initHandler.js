@@ -1,6 +1,6 @@
 'use strict';
 const request = require('request');
-const inquirer = require('inquirer')
+const inquirer = require('inquirer');
 const {
   promisify: p
 } = require('util');
@@ -24,7 +24,7 @@ const initHandler = async (argv) => {
 
   let accessToken;
   try {
-    accessToken = await fetchToken(username, password)
+    accessToken = await fetchToken(username, password);
   } catch (e) {
     console.log(e);
     console.log('CANNOT get token. check your network proxy or credencial.');
@@ -35,11 +35,11 @@ const initHandler = async (argv) => {
   let organizations;
   let rooms;
   try {
-    user = await fetchUserInfo()
-    organizations = await fetchOrganizationInfo()
-    rooms = await fetchRoomInfo(user.id)
+    user = await fetchUserInfo();
+    organizations = await fetchOrganizationInfo();
+    rooms = await fetchRoomInfo(user.id);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     console.log('FAILED fetching organization/rooms info. check your network.');
   }
 
@@ -50,14 +50,14 @@ const initHandler = async (argv) => {
       user,
       organizations,
       rooms,
-    })
+    });
   } catch (e) {
     console.log(e);
     console.log('FAILED saving organization/rooms info.');
   }
 
   await roomSelectPrompt();
-}
+};
 
 const fetchUserInfo = async () => {
   const {
@@ -71,18 +71,18 @@ const fetchUserInfo = async () => {
     user = {
       id: u.id,
       name: u.name,
-    }
+    };
     break;
   }
   return user;
-}
+};
 
 
 const fetchOrganizationInfo = async () => {
   const {
     organizations
   } = await apiCall('/organizations');
-  let myOrganizations = [];
+  const myOrganizations = [];
   for (let i = 0; i < organizations.length; i++) {
     const o = organizations[i];
     const organization = {
@@ -90,19 +90,19 @@ const fetchOrganizationInfo = async () => {
       name: o.name,
       slug: o.slug,
       links: o.links,
-    }
+    };
     myOrganizations.push(organization);
   }
 
   return myOrganizations;
-}
+};
 
 
 const fetchRoomInfo = async (userId) => {
   const {
     joins,
     rooms,
-  } = await apiCall('/rooms')
+  } = await apiCall('/rooms');
 
   const myJoinIds = [];
   const guyId = userId;
@@ -110,7 +110,7 @@ const fetchRoomInfo = async (userId) => {
     const join = joins[i];
     if (join.guy_id !== guyId) continue;
 
-    myJoinIds.push(join.id)
+    myJoinIds.push(join.id);
   }
 
   const myRooms = [];
@@ -118,7 +118,7 @@ const fetchRoomInfo = async (userId) => {
     const r = rooms[i];
     const {
       join_ids
-    } = r
+    } = r;
     for (let j = 0; j < join_ids.length; j++) {
       const joinId = join_ids[j];
       if (myJoinIds.indexOf(joinId) === -1) continue;
@@ -128,14 +128,14 @@ const fetchRoomInfo = async (userId) => {
         name: r.name,
         links: r.links,
         organizationId: r.organization_id,
-      }
+      };
       myRooms.push(room);
       break;
     }
   }
 
   return myRooms;
-}
+};
 
 const authPrompt = async () => {
   const answers = await inquirer
@@ -150,8 +150,8 @@ const authPrompt = async () => {
         }
 
         /* @REF HTML5 input[type=email] willful violation against RFC5322 */
-        const emailPattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-        return emailPattern.test(trimmed)
+        const emailPattern = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        return emailPattern.test(trimmed);
       }
     }, {
       type: 'password',
@@ -159,12 +159,12 @@ const authPrompt = async () => {
       message: 'password (will not be kept anywhere):',
       validate: (input) => {
         const trimmed = input.trim();
-        return trimmed.length !== 0
+        return trimmed.length !== 0;
       }
-    }])
+    }]);
 
-  return answers
-}
+  return answers;
+};
 
 const roomSelectPrompt = async () => {
   const config = await readConfig();
@@ -190,13 +190,13 @@ const roomSelectPrompt = async () => {
       } = organizations[j];
       if (id !== organizationId) continue;
 
-      const unitedName = `${i+1}: ${roomName}(${organizationName})`
+      const unitedName = `${i+1}: ${roomName}(${organizationName})`;
       units.push([i, unitedName]);
       break;
     }
   }
 
-  const choices = units.map(u => u[1]);
+  const choices = units.map((u) => u[1]);
 
   const answers = await inquirer
     .prompt([{
@@ -204,16 +204,16 @@ const roomSelectPrompt = async () => {
       name: 'room',
       message: 'choose current room:',
       choices,
-    }])
+    }]);
   const {
     room: roomName
   } = answers;
 
-  const index = units.findIndex(u => u[1] === roomName)
+  const index = units.findIndex((u) => u[1] === roomName);
 
   config.current = rooms.slice(index, index + 1)[0];
   await writeConfig(config);
-}
+};
 
 const fetchToken = async (username, password) => {
   const request_p = p(request);
@@ -229,24 +229,24 @@ const fetchToken = async (username, password) => {
   const headers = {
     'Content-Type': contentType,
     'Content-Length': Buffer.byteLength(jsonStr)
-  }
+  };
   const options = {
     url: path,
     method,
     headers,
     body: jsonStr,
-  }
+  };
 
-  const res = await request_p(options)
+  const res = await request_p(options);
   const {
     body
   } = res;
   const {
     access_token
-  } = JSON.parse(body)
+  } = JSON.parse(body);
 
   if (!access_token) {
-    throw new Error('authentication FAILED.')
+    throw new Error('authentication FAILED.');
   }
 
   const config = await readConfig();
@@ -255,7 +255,7 @@ const fetchToken = async (username, password) => {
   await writeConfig(config);
 
   return access_token;
-}
+};
 
 exports.fetchUserInfo = fetchUserInfo;
 exports.fetchOrganizationInfo = fetchOrganizationInfo;

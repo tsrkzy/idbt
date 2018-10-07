@@ -30,10 +30,10 @@ const cancelHandler = async (argv) => {
   try {
     await apiCall(path, 'DELETE');
     config.last = null;
-    await writeConfig(config)
+    await writeConfig(config);
     console.log('deleted SUCCESSFULLY.');
   } catch (e) {
     console.log('FAILED to delete.');
   }
-}
-exports.cancelHandler = cancelHandler
+};
+exports.cancelHandler = cancelHandler;

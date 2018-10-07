@@ -13,6 +13,10 @@ exports.spin = ({ msg = '', type = 'dots' }, asyncFunction) => new Promise((reso
   return asyncFunction()
     .then((value) => {
       clearInterval(id);
+      console.log('\r');
       resolve(value);
+    }).catch((e) => {
+      clearInterval(id);
+      throw e;
     });
 });

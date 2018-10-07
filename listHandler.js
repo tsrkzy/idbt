@@ -9,7 +9,7 @@ const {
   readConfig,
 } = require('./config');
 const chalk = require('chalk');
-const TurnDown = require('turndown')
+const TurnDown = require('turndown');
 const terminalLink = require('terminal-link');
 const { spin } = require('./spinner');
 
@@ -27,8 +27,7 @@ const listHandler = async (argv) => {
   const { name, links } = current;
   const uri = links.messages;
 
-  const { messages } = await spin({ msg: ` LOADING: ${name}` }, apiCall.bind(this, uri))
-  console.log('\r');
+  const { messages } = await spin({ msg: ` LOADING: ${name}` }, apiCall.bind(this, uri));
 
   for (let i = 0; i < messages.length; i++) {
     const m = messages[i];
@@ -39,22 +38,22 @@ const listHandler = async (argv) => {
       createdAt: m.created_at,
       html: m.body,
       senderId: m.sender_id,
-    }
+    };
     let md = toMarkDown(message.html);
     md = compress(md);
     const container = coloring(md);
 
     if (container.length === 1) {
-      console.log(`${chalk.bold(`${message.senderName}:`)} ${container[0]}`)
+      console.log(`${chalk.bold(`${message.senderName}:`)} ${container[0]}`);
     } else {
-      console.log(chalk.bold(`${message.senderName}:`))
+      console.log(chalk.bold(`${message.senderName}:`));
       for (let i = 0; i < container.length; i++) {
         const c = container[i];
         console.log(`${((i + 1) === container.length) ? '`' : '|'} ${c}`);
       }
     }
   }
-}
+};
 
 function coloring(markdown) {
   const lines = markdown.split('\n');
@@ -80,58 +79,48 @@ function coloring(markdown) {
     /* inline code */
     line = line.replace('\\`', '__BACK_QUOTE');
     if (line.indexOf('`') !== -1 && line.indexOf('`') !== line.lastIndexOf('`')) {
-      const lines = line.split('`')
+      const lines = line.split('`');
       const a = [];
       for (let i = 0; i < lines.length; i++) {
         const l = lines[i];
-        a.push((i % 2 === 0) ? l : chalk.bgBlackBright(l))
+        a.push((i % 2 === 0) ? l : chalk.bgBlackBright(l));
       }
       line = a.join('`');
     }
-    line = line.replace('__BACK_QUOTE', '\\`')
+    line = line.replace('__BACK_QUOTE', '\\`');
 
     /* blockquote */
-    line = line.replace(/^(\s*)\>\s/g, (_, ...hit) => {
-      return `${hit[0]}${chalk.bgBlackBright('>')} `
-    })
+    line = line.replace(/^(\s*)\>\s/g, (_, ...hit) => `${hit[0]}${chalk.bgBlackBright('>')} `);
 
     /* link */
-    const linkPattern = /(?<!\!)\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g
+    const linkPattern = /[^\!]?\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g;
     line = line.replace(linkPattern, (_, ...hit) => {
       attachIndex++;
       const href = terminalLink('LINK', hit[1]);
       const link = `[${attachIndex}] ${href} - ${hit[0]}`;
       attachments.push(link);
-      return `[${chalk.magentaBright(hit[0])}](${chalk.magentaBright(`*${attachIndex}`)})`
-    })
+      return `[${chalk.magentaBright(hit[0])}](${chalk.magentaBright(`*${attachIndex}`)})`;
+    });
 
     /* image */
-    const imagePattern = /\!\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g
+    const imagePattern = /\!\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g;
     line = line.replace(imagePattern, (_, ...hit) => {
       attachIndex++;
       const src = terminalLink('IMAGE', hit[1]);
       const img = `[${attachIndex}] ${src}`;
       attachments.push(img);
-      return `[${chalk.cyanBright(hit[0] || 'IMAGE')}](${chalk.cyanBright(`*${attachIndex}`)})`
-    })
+      return `[${chalk.cyanBright(hit[0] || 'IMAGE')}](${chalk.cyanBright(`*${attachIndex}`)})`;
+    });
 
     /* mention */
-    line = line.replace(/\*\*@([0-9a-zA-Z\-_]+)\*\*/g, (_, ...hit) => {
-      return `${chalk.bold.yellowBright('@')}${chalk.yellowBright(hit[0])}`
-    })
+    line = line.replace(/\*\*@([0-9a-zA-Z\-_]+)\*\*/g, (_, ...hit) => `${chalk.bold.yellowBright('@')}${chalk.yellowBright(hit[0])}`);
 
     /* bullet list */
-    line = line.replace(/^(\s*)([\+\*])(\s+)/, (_, ...hit) => {
-      return `${hit[0]}${chalk.bold.cyan(hit[1])}${hit[2]}`
-    })
+    line = line.replace(/^(\s*)([\+\*])(\s+)/, (_, ...hit) => `${hit[0]}${chalk.bold.cyan(hit[1])}${hit[2]}`);
     /* order list */
-    line = line.replace(/^(\s*)(\d+\.)(\s+)/, (_, ...hit) => {
-      return `${hit[0]}${chalk.cyan(hit[1])}${hit[2]}`
-    })
+    line = line.replace(/^(\s*)(\d+\.)(\s+)/, (_, ...hit) => `${hit[0]}${chalk.cyan(hit[1])}${hit[2]}`);
     /* header */
-    line = line.replace(/^(#+)/, (_, ...hit) => {
-      return `${chalk.magentaBright(hit[0])}`
-    })
+    line = line.replace(/^(#+)/, (_, ...hit) => `${chalk.magentaBright(hit[0])}`);
     colored.push(line);
   }
   return colored.concat(attachments);
@@ -147,7 +136,7 @@ function compress(markdown) {
     }
     compressed.push(line);
   }
-  return compressed.join('\n')
+  return compressed.join('\n');
 }
 
 function toMarkDown(html) {
@@ -158,7 +147,7 @@ function toMarkDown(html) {
   });
   td.keep(['pre', 'code']);
   const markdown = td.turndown(html);
-  return markdown
+  return markdown;
 }
 
 exports.listHandler = listHandler;
