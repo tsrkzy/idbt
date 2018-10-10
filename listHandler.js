@@ -64,66 +64,131 @@ function coloring(markdown) {
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
 
-    /* code block check */
+    /* code block */
     if (line === '```') {
       inCodeBlock = !inCodeBlock;
       colored.push(inCodeBlock ? chalk.bgBlackBright(line) : '');
       continue;
     }
-    /* code block */
     if (inCodeBlock) {
       colored.push(chalk.bgBlackBright(`   ${line}`));
       continue;
     }
 
     /* inline code */
-    line = line.replace('\\`', '__BACK_QUOTE');
     if (line.indexOf('`') !== -1 && line.indexOf('`') !== line.lastIndexOf('`')) {
       const lines = line.split('`');
       const a = [];
       for (let i = 0; i < lines.length; i++) {
-        const l = lines[i];
-        a.push((i % 2 === 0) ? l : chalk.bgBlackBright(l));
+        let l = lines[i];
+        if (i % 2 !== 0) {
+          a.push(chalk.bgBlackBright(l));
+          continue;
+        }
+        /* blockquote */
+        l = replacer(l, 'blockquote');
+        /* link */
+        l = replacer(l, 'link');
+        /* image */
+        l = replacer(l, 'image');
+        /* mention */
+        l = replacer(l, 'mention');
+        /* strong */
+        l = replacer(l, 'strong');
+        /* strikethrough */
+        l = replacer(l, 'strikethrough');
+        /* bullet list */
+        l = replacer(l, 'bulletList');
+        /* order list */
+        l = replacer(l, 'orderList');
+        /* header */
+        l = replacer(l, 'header');
+        a.push(l);
       }
       line = a.join('`');
+      colored.push(line);
+      continue;
     }
-    line = line.replace('__BACK_QUOTE', '\\`');
 
     /* blockquote */
-    line = line.replace(/^(\s*)\>\s/g, (_, ...hit) => `${hit[0]}${chalk.bgBlackBright('>')} `);
-
+    line = replacer(line, 'blockquote');
     /* link */
-    const linkPattern = /[^\!]?\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g;
-    line = line.replace(linkPattern, (_, ...hit) => {
-      attachIndex++;
-      const href = terminalLink('LINK', hit[1]);
-      const link = `[${attachIndex}] ${href} - ${hit[0]}`;
-      attachments.push(link);
-      return `[${chalk.magentaBright(hit[0])}](${chalk.magentaBright(`*${attachIndex}`)})`;
-    });
-
+    line = replacer(line, 'link');
     /* image */
-    const imagePattern = /\!\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g;
-    line = line.replace(imagePattern, (_, ...hit) => {
-      attachIndex++;
-      const src = terminalLink('IMAGE', hit[1]);
-      const img = `[${attachIndex}] ${src}`;
-      attachments.push(img);
-      return `[${chalk.cyanBright(hit[0] || 'IMAGE')}](${chalk.cyanBright(`*${attachIndex}`)})`;
-    });
-
+    line = replacer(line, 'image');
     /* mention */
-    line = line.replace(/\*\*@([0-9a-zA-Z\-_]+)\*\*/g, (_, ...hit) => `${chalk.bold.yellowBright('@')}${chalk.yellowBright(hit[0])}`);
-
+    line = replacer(line, 'mention');
+    /* strong */
+    line = replacer(line, 'strong');
+    /* strikethrough */
+    line = replacer(line, 'strikethrough');
     /* bullet list */
-    line = line.replace(/^(\s*)([\+\*])(\s+)/, (_, ...hit) => `${hit[0]}${chalk.bold.cyan(hit[1])}${hit[2]}`);
+    line = replacer(line, 'bulletList');
     /* order list */
-    line = line.replace(/^(\s*)(\d+\.)(\s+)/, (_, ...hit) => `${hit[0]}${chalk.cyan(hit[1])}${hit[2]}`);
+    line = replacer(line, 'orderList');
     /* header */
-    line = line.replace(/^(#+)/, (_, ...hit) => `${chalk.magentaBright(hit[0])}`);
+    line = replacer(line, 'header');
+
     colored.push(line);
   }
+
   return colored.concat(attachments);
+
+  function replacer(line, mode) {
+    const modes = {
+      'blockquote': {
+        pattern: /^(\s*)\>\s/g,
+        fn: (_, ...hit) => `${hit[0]}${chalk.bgBlackBright('>')} `
+      },
+      'link': {
+        pattern: /[^\!]?\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g,
+        fn: (_, ...hit) => {
+          attachIndex++;
+          const href = terminalLink('LINK', hit[1]);
+          const link = `[${attachIndex}] ${href} - ${hit[0]}`;
+          attachments.push(link);
+          return `[${chalk.magentaBright(hit[0])}](${chalk.magentaBright(`*${attachIndex}`)})`;
+        }
+      },
+      'image': {
+        pattern: /\!\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g,
+        fn: (_, ...hit) => {
+          attachIndex++;
+          const src = terminalLink('IMAGE', hit[1]);
+          const img = `[${attachIndex}] ${src}`;
+          attachments.push(img);
+          return `[${chalk.cyanBright(hit[0] || 'IMAGE')}](${chalk.cyanBright(`*${attachIndex}`)})`;
+        }
+      },
+      'mention': {
+        pattern: /\*\*@([0-9a-zA-Z\-_]+)\*\*/g,
+        fn: (_, ...hit) => `${chalk.bold.yellowBright('@')}${chalk.yellowBright(hit[0])}`
+      },
+      'strong': {
+        pattern: /\*\*([^\*]+)\*\*/g,
+        fn: (_, ...hit) => `${chalk.bold.bgRedBright.white(hit[0])}`
+      },
+      'strikethrough': {
+        pattern: /~~([^\*]+)~~/g,
+        fn: (_, ...hit) => `~~${hit[0]}~~`
+      },
+      'bulletList': {
+        pattern: /^(\s*)([\+\*])(\s+)/,
+        fn: (_, ...hit) => `${hit[0]}${chalk.bold.cyan(hit[1])}${hit[2]}`
+      },
+      'orderList': {
+        pattern: /^(\s*)(\d+\.)(\s+)/,
+        fn: (_, ...hit) => `${hit[0]}${chalk.cyan(hit[1])}${hit[2]}`
+      },
+      'header': {
+        pattern: /^(#+)/,
+        fn: (_, ...hit) => `${chalk.magentaBright(hit[0])}`
+      },
+    };
+    const { pattern, fn } = modes[mode];
+
+    return line.replace(pattern, fn)
+  }
 }
 
 function compress(markdown) {
@@ -145,8 +210,16 @@ function toMarkDown(html) {
     codeBlockStyle: 'fenced',
     bulletListMarker: '+'
   });
+  td.addRule('strikethrough', {
+    filter: ['del', 's', 'strike'],
+    replacement: (content) => `~~${content}~~`,
+  })
   td.keep(['pre', 'code']);
   const markdown = td.turndown(html);
+  // console.log('html:');
+  // console.log(html);
+  // console.log('markdown:');
+  // console.log(markdown);
   return markdown;
 }
 
