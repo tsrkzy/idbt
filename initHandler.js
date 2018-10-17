@@ -1,26 +1,19 @@
 'use strict';
 const request = require('request');
 const inquirer = require('inquirer');
-const {
-  promisify: p
-} = require('util');
-const {
-  apiCall
-} = require('./apiCall');
+const { promisify: p } = require('util');
+const { apiCall } = require('./apiCall');
 const {
   checkConfigFileState,
   readConfig,
   writeConfig
 } = require('./config');
+const { spin } = require('./spinner');
 
 const initHandler = async (argv) => {
-
   await checkConfigFileState();
 
-  const {
-    username,
-    password
-  } = await authPrompt();
+  const { username, password } = await authPrompt();
 
   let accessToken;
   try {
@@ -60,18 +53,13 @@ const initHandler = async (argv) => {
 };
 
 const fetchUserInfo = async () => {
-  const {
-    users
-  } = await apiCall('/users');
+  const { users } = await apiCall('/users');
   let user = {};
   for (let i = 0; i < users.length; i++) {
     const u = users[i];
     if (!u.hasOwnProperty('email')) continue;
 
-    user = {
-      id: u.id,
-      name: u.name,
-    };
+    user = { id: u.id, name: u.name, };
     break;
   }
   return user;
@@ -79,9 +67,7 @@ const fetchUserInfo = async () => {
 
 
 const fetchOrganizationInfo = async () => {
-  const {
-    organizations
-  } = await apiCall('/organizations');
+  const { organizations } = await apiCall('/organizations');
   const myOrganizations = [];
   for (let i = 0; i < organizations.length; i++) {
     const o = organizations[i];
@@ -99,10 +85,7 @@ const fetchOrganizationInfo = async () => {
 
 
 const fetchRoomInfo = async (userId) => {
-  const {
-    joins,
-    rooms,
-  } = await apiCall('/rooms');
+  const { joins, rooms, } = await apiCall('/rooms');
 
   const myJoinIds = [];
   const guyId = userId;
@@ -116,9 +99,7 @@ const fetchRoomInfo = async (userId) => {
   const myRooms = [];
   for (let i = 0; i < rooms.length; i++) {
     const r = rooms[i];
-    const {
-      join_ids
-    } = r;
+    const { join_ids } = r;
     for (let j = 0; j < join_ids.length; j++) {
       const joinId = join_ids[j];
       if (myJoinIds.indexOf(joinId) === -1) continue;
@@ -168,10 +149,7 @@ const authPrompt = async () => {
 
 const roomSelectPrompt = async () => {
   const config = await readConfig();
-  const {
-    organizations,
-    rooms
-  } = config;
+  const { organizations, rooms } = config;
 
   if (!organizations || !rooms) {
     throw new Error('config file is empty.');
@@ -190,7 +168,7 @@ const roomSelectPrompt = async () => {
       } = organizations[j];
       if (id !== organizationId) continue;
 
-      const unitedName = `${i+1}: ${roomName}(${organizationName})`;
+      const unitedName = `${i + 1}: ${roomName}(${organizationName})`;
       units.push([i, unitedName]);
       break;
     }

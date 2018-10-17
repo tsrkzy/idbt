@@ -38,10 +38,11 @@ const listHandler = async (argv) => {
       createdAt: m.created_at,
       html: m.body,
       senderId: m.sender_id,
+      file_urls: m.file_urls,
     };
     let md = toMarkDown(message.html);
     md = compress(md);
-    const container = coloring(md);
+    const container = coloring(md, message);
 
     if (container.length === 1) {
       console.log(`${chalk.bold(`${message.senderName}:`)} ${container[0]}`);
@@ -55,11 +56,13 @@ const listHandler = async (argv) => {
   }
 };
 
-function coloring(markdown) {
+function coloring(markdown, message) {
+
   const lines = markdown.split('\n');
+  const { file_urls: files = [] } = message;
   const colored = [];
   let inCodeBlock = false;
-  const attachments = [];
+  const attachments = files.map((f) => `[-] ATTACHMENT: (${f})`);
   let attachIndex = 0;
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];

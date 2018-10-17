@@ -10,7 +10,7 @@ const {
 } = require('./initHandler');
 
 const channelHandler = async (argv) => {
-  roomSelectPrompt();
+  await roomSelectPrompt();
 };
 
 exports.channelHandler = channelHandler;
