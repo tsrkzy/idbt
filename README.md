@@ -10,7 +10,7 @@ idobata unofficial cli tool.
 ターミナルソフト、各種IDE･エディタ付属のターミナルから実行し、仕事中に流し見をしやすいようにカラーリング&圧縮したタイムラインを表示します。
 
 > Windowsのターミナルから実行した場合、いろいろ不具合が多いです……。
-VSCode付属のターミナルから実行するのがわりと安全かもしれません。
+**VSCode付属のターミナルから実行する** のがわりと安全かもしれません。
 [VisualStudioCode 統合コンソール のbash.exe でファイル名の日本語文字化け対応 - Qiita](https://qiita.com/0xmks/items/a3bb731cabfa61b18578)
 
 ## thanks for
