@@ -8,6 +8,8 @@ const {
 } = require('./apiCall');
 
 const cancelHandler = async (argv) => {
+  return false;
+  
   const config = await readConfig();
   const {
     last

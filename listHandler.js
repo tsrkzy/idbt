@@ -137,11 +137,13 @@ function coloring(markdown) {
   function replacer(line, mode) {
     const modes = {
       'blockquote': {
+        /* コードブロック */
         pattern: /^(\s*)\>\s/g,
         fn: (_, ...hit) => `${hit[0]}${chalk.bgBlackBright('>')} `
       },
       'link': {
-        pattern: /[^\!]?\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g,
+        /* [title](href)形式のリンク */
+        pattern: /(?<!\!)\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g,
         fn: (_, ...hit) => {
           attachIndex++;
           const href = terminalLink('LINK', hit[1]);
@@ -151,6 +153,7 @@ function coloring(markdown) {
         }
       },
       'image': {
+        /* ![title](src)形式の挿入画像 ※｢添付｣した画像は別処理でpickしている */
         pattern: /\!\[([^\]]*)\]\(([a-zA-Z0-9\-\_\.\!\'\(\)\*\;\/\?\:\@\&\=\+\$\%\#\,]+)\)/g,
         fn: (_, ...hit) => {
           attachIndex++;
@@ -161,26 +164,32 @@ function coloring(markdown) {
         }
       },
       'mention': {
+        /* @ユーザ名 形式のメンション */
         pattern: /\*\*@([0-9a-zA-Z\-_]+)\*\*/g,
         fn: (_, ...hit) => `${chalk.bold.yellowBright('@')}${chalk.yellowBright(hit[0])}`
       },
       'strong': {
+        /* **ボールド** 形式のボールド体 */
         pattern: /\*\*([^\*]+)\*\*/g,
         fn: (_, ...hit) => `${chalk.bold.bgRedBright.white(hit[0])}`
       },
       'strikethrough': {
+        /* ~~打ち消し~~ 形式の打ち消し */
         pattern: /~~([^\*]+)~~/g,
         fn: (_, ...hit) => `~~${hit[0]}~~`
       },
       'bulletList': {
+        /* * リスト(順序なし箇条書き) */
         pattern: /^(\s*)([\+\*])(\s+)/,
         fn: (_, ...hit) => `${hit[0]}${chalk.bold.cyan(hit[1])}${hit[2]}`
       },
       'orderList': {
+        /* 1. リスト(通し番号付き) */
         pattern: /^(\s*)(\d+\.)(\s+)/,
         fn: (_, ...hit) => `${hit[0]}${chalk.cyan(hit[1])}${hit[2]}`
       },
       'header': {
+        /* ###見出し */
         pattern: /^(#+)/,
         fn: (_, ...hit) => `${chalk.magentaBright(hit[0])}`
       },
