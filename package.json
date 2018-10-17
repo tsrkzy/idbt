@@ -1,6 +1,6 @@
 {
   "name": "idbt",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "idobata unofficial cli client",
   "bin": "bin.js",
   "main": "index.js",
