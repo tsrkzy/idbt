@@ -9,6 +9,10 @@ idobata unofficial cli tool.
 プログラマのためのSNS [Idobata](https://idobata.io/ja/home) の非公式CLIクライアントです。
 ターミナルソフト、各種IDE･エディタ付属のターミナルから実行し、仕事中に流し見をしやすいようにカラーリング&圧縮したタイムラインを表示します。
 
+> Windowsのターミナルから実行した場合、いろいろ不具合が多いです……。
+VSCode付属のターミナルから実行するのがわりと安全かもしれません。
+[VisualStudioCode 統合コンソール のbash.exe でファイル名の日本語文字化け対応 - Qiita](https://qiita.com/0xmks/items/a3bb731cabfa61b18578)
+
 ## thanks for
 
 * [初めてのnpm パッケージ公開 - Qiita](https://qiita.com/TsutomuNakamura/items/f943e0490d509f128ae2)
@@ -33,6 +37,13 @@ $ npm install -g idbt
 $ mkdir -p ~/idbt # 適当なディレクトリを作成
 $ cd ~/idbt
 $ npm install idbt
+```
+
+> 続く設定等でネットワーク関係のエラーが出る場合、npm の proxy 周りが原因の可能性が高いです。
+
+```
+$ npm config get proxy
+http://proxy.****.jp:8080/
 ```
 
 ## uninstallation
