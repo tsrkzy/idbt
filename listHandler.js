@@ -43,11 +43,18 @@ const listHandler = async (argv) => {
     let md = toMarkDown(message.html);
     md = compress(md);
     const container = coloring(md, message);
+    const date = new Date(message.createdAt)
+    const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][date.getMonth()];
+    const day = date.getDate();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const timestamp = `[${month} ${day} ${hours}:${minutes}]`;
+
 
     if (container.length === 1) {
-      console.log(`${chalk.bold(`${message.senderName}:`)} ${container[0]}`);
+      console.log(`${timestamp} ${chalk.bold(`${message.senderName}:`)} ${container[0]}`);
     } else {
-      console.log(chalk.bold(`${message.senderName}:`));
+      console.log(`${timestamp} ${chalk.bold(message.senderName)}:`);
       for (let i = 0; i < container.length; i++) {
         const c = container[i];
         console.log(`${((i + 1) === container.length) ? '`' : '|'} ${c}`);
@@ -168,8 +175,12 @@ function coloring(markdown, message) {
       },
       'mention': {
         /* @ユーザ名 形式のメンション */
-        pattern: /\*\*@([0-9a-zA-Z\-_]+)\*\*/g,
-        fn: (_, ...hit) => `${chalk.bold.yellowBright('@')}${chalk.yellowBright(hit[0])}`
+        pattern: /\*\*@([0-9a-zA-Z\-_\\]+)\*\*/g,
+        fn: (_, ...hit) => {
+          // 半角記号はエスケープされているのでもとに戻す
+          const name = hit[0].replace(/\\(.)/g, (_, c) => c[0])
+          return `${chalk.bold.yellowBright('@')}${chalk.yellowBright(name)}`
+        }
       },
       'strong': {
         /* **ボールド** 形式のボールド体 */
