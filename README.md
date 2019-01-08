@@ -6,7 +6,7 @@ this is dev version.
 
 idobata unofficial cli tool.
 
-プログラマのためのSNS [Idobata](https://idobata.io/ja/home) の非公式CLIクライアントです。   
+プログラマのためのSNS [Idobata](https://idobata.io/ja/home) の **非公式** CLIクライアントです。   
 ターミナルソフト、各種IDE･エディタ付属のターミナルから実行し、仕事中に流し見をしやすいようにカラーリング&圧縮したタイムラインを表示します。
 
 > Windowsのターミナルから実行した場合、いろいろ不具合が多いです……。   
@@ -23,34 +23,35 @@ idobata unofficial cli tool.
 * [yargs/yargs: yargs the modern, pirate-themed successor to optimist.](https://github.com/yargs/yargs)
 
 
-## installation
+## インストール
 
 ```
-## ユーザディレクトリ配下にidbtディレクトリを作成し、そこにインストールする場合の例
-$ mkdir -p ~/idbt
-$ cd ~/idbt
+## ユーザディレクトリ配下に `idobata_cli` ディレクトリを作成し、そこにインストールする場合の例
+$ mkdir -p ~/idobata_cli
+$ cd ~/idobata_cli
 $ npm install idbt
 
 ## aliasコマンドを使用してエイリアスを定義しておくと便利かも
-$ echo "alias idbt='node ~/idbt/bin'" >> ~/.bashrc
+# $(npm bin)は、カレントディレクトリに最も近い node_modules/.bin の絶対パスを返します
+$ echo "alias idbt='node $(npm bin)/idbt'" >> ~/.bashrc
 $ source ~/.bashrc
 ```
 
-## uninstallation
+## アンインストール
 
 ```
 # インストールしたディレクトリを削除してください。
-rm -rf ~/idbt
+rm -rf ~/idobata_cli
 
 # ユーザディレクトリ配下に設定ファイルを作成しますので、削除してください
 $ rm -rf ~/.idbt
 ```
 
-# usage
+# 使用例
 
 > 前述の `idbt` にエイリアスを作成した場合のコマンドを記載します。
 
-## get tokens & create config file
+## トークンとチャンネル情報の取得
 
 idobata APIへのアクセスにはトークンが必要です。   
 トークンはID(e-mail)とパスワードを使用し、Token APIから取得します。
@@ -61,11 +62,13 @@ $ idbt init
 
 画面の指示に従い、IDとパスワードを入力し、矢印キーでチャンネルを選択してください。   
 ユーザディレクトリの直下に、設定ファイル `~/.idbt` を作成します。   
-IDと取得したトークン、選択したチャンネルは設定ファイルに格納し、パスワードは保存しません。
+IDと取得したトークン、選択したチャンネルを設定ファイルに格納し、パスワードは保存しません。
 
 > 選択したチャネルは **カレントチャンネル** として設定ファイルに格納し、タイムライン読み出し･投稿の際に参照します。
 
-## show list
+> 新しいチャンネルに参加した場合などは、再度 `idbt init` コマンドを実行してチャンネル情報を再取得してください。
+
+## タイムラインの表示
 
 カレントチャンネルのタイムラインを表示します。   
 HTML形式のidobata APIのレスポンスをMarkdownへパースして空行などを圧縮、   
@@ -81,7 +84,7 @@ $ idbt l
 
 > ページングの追跡は未実装です……。
 
-## change current channel
+## チャンネル切り替え
 
 カレントチャンネルの切り替えを行うことができます。
 
@@ -92,7 +95,7 @@ $ idbt channel
 $ idbt c
 ```
 
-## post messages
+## メッセージの投稿
 
 ```
 # use stdin
