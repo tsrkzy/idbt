@@ -25,47 +25,30 @@ idobata unofficial cli tool.
 
 ## installation
 
-グローバルで使用する事を想定していますので、 `-g` オプションを指定してください。   
-※現在は開発版のため、バンドル化を行っておらず、そのため、依存ライブラリをグローバルに展開します。   
-Node.jsでの開発者の方など、グローバルにモジュールをインストールしたくない場合は、ローカルでのインストールをお試しください。
-
 ```
-# global
-$ npm install -g idbt
-
-# local
-$ mkdir -p ~/idbt # 適当なディレクトリを作成
+## ユーザディレクトリ配下にidbtディレクトリを作成し、そこにインストールする場合の例
+$ mkdir -p ~/idbt
 $ cd ~/idbt
 $ npm install idbt
-```
 
-> 続く設定等でネットワーク関係のエラーが出る場合、npm の proxy 周りが原因の可能性が高いです。
-
-```
-$ npm config get proxy
-http://proxy.****.jp:8080/
+## aliasコマンドを使用してエイリアスを定義しておくと便利かも
+$ echo "alias idbt='node ~/idbt/bin'" >> ~/.bashrc
+$ source ~/.bashrc
 ```
 
 ## uninstallation
 
 ```
-# 設定ファイルの削除
+# インストールしたディレクトリを削除してください。
+rm -rf ~/idbt
+
+# ユーザディレクトリ配下に設定ファイルを作成しますので、削除してください
 $ rm -rf ~/.idbt
-
-# global
-$ npm uninstall -g idbt
-
-# local
-$ # インストールしたディレクトリを削除してください。
 ```
 
 # usage
 
-グローバルにインストールした場合は `$ idbt init`、   
-ローカルにインストールした場合は、エントリーポイントの `/bin.js` を実行する形で呼び出す必要があります。   
-インストールしたディレクトリに移動して `$ node bin init`、または直接 `$ node {PATH_idbt}/bin init` のように呼び出してください。
-
-以降の手順では、グローバルにインストールした場合のコマンド例を記載します。
+> 前述の `idbt` にエイリアスを作成した場合のコマンドを記載します。
 
 ## get tokens & create config file
 
@@ -81,15 +64,6 @@ $ idbt init
 IDと取得したトークン、選択したチャンネルは設定ファイルに格納し、パスワードは保存しません。
 
 > 選択したチャネルは **カレントチャンネル** として設定ファイルに格納し、タイムライン読み出し･投稿の際に参照します。
-
-## show config values
-
-現在の設定を確認できます。   
-開発版なので表示が乱暴ですが。
-
-```
-$ idbt config
-```
 
 ## show list
 
@@ -135,6 +109,14 @@ $ idbt post --emacs
 $ idbt p "hello idobata."
 $ idbt p 
 $ idbt p --emacs
+```
+
+## show config values
+
+現在の設定を確認できます。   
+
+```
+$ idbt config
 ```
 
 ## help
