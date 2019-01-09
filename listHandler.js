@@ -137,7 +137,7 @@ function coloring(markdown, message) {
   function replacer(line, mode) {
     const modes = {
       'backquote': {
-        /* コードブロック */
+        /* 引用符 */
         pattern: /^(\s*)\>\s/g,
         fn: (_, ...hit) => `${hit[0]}${chalk.bgBlackBright('>')} `
       },
