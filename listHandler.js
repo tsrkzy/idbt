@@ -1,13 +1,7 @@
 'use strict';
-const {
-  promisify: p
-} = require('util');
-const {
-  apiCall
-} = require('./apiCall');
-const {
-  readConfig,
-} = require('./config');
+const { promisify: p } = require('util');
+const { apiCall } = require('./apiCall');
+const { readConfig, } = require('./config');
 const chalk = require('chalk');
 const TurnDown = require('turndown');
 const terminalLink = require('terminal-link');
@@ -15,9 +9,7 @@ const { spin } = require('./spinner');
 
 const listHandler = async (argv) => {
   const config = await readConfig();
-  const {
-    current
-  } = config;
+  const { current } = config;
 
   if (!current) {
     console.log('NO current channel FOUND.');
@@ -27,7 +19,7 @@ const listHandler = async (argv) => {
   const { name, links } = current;
   const uri = links.messages;
 
-  const { messages } = await spin({ msg: ` LOADING: ${name}` }, apiCall.bind(this, uri));
+  const messages = await fetchMessages.call(this, { channelName: name, uri });
 
   for (let i = 0; i < messages.length; i++) {
     const m = messages[i];
@@ -43,28 +35,44 @@ const listHandler = async (argv) => {
     let md = toMarkDown(message.html);
     md = compress(md);
     const container = coloring(md, message);
-    const date = new Date(message.createdAt)
-    const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][date.getMonth()];
-    const day = date.getDate();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const timestamp = `[${month} ${day} ${hours}:${minutes}]`;
-
-
-    if (container.length === 1) {
-      console.log(`${timestamp} ${chalk.bold(`${message.senderName}:`)} ${container[0]}`);
-    } else {
-      console.log(`${timestamp} ${chalk.bold(message.senderName)}:`);
-      for (let i = 0; i < container.length; i++) {
-        const c = container[i];
-        console.log(`${((i + 1) === container.length) ? '`' : '|'} ${c}`);
-      }
-    }
+    const timestamp = generateTimestampString(message.createdAt);
+    printContainer.call(this, { timestamp, message, container });
   }
 };
 
-function coloring(markdown, message) {
+async function fetchMessages({ channelName, uri }) {
+  const { messages } = await spin({ msg: ` LOADING: ${channelName}` }, apiCall.bind(this, uri));
+  return messages;
+}
 
+function generateTimestampString(createdAt) {
+  const date = new Date(createdAt)
+  // const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][date.getMonth()];
+  const month = `00${date.getMonth() + 1}`.slice(-2);
+  const day = `00${date.getDate()}`.slice(-2);
+  const hours = `00${date.getHours()}`.slice(-2);
+  const minutes = `00${date.getMinutes()}`.slice(-2);
+  const timestamp = `[${month}/${day} ${hours}:${minutes}]`;
+
+  return timestamp;
+}
+
+function printContainer({ timestamp, message, container }) {
+  if (container.length === 1) {
+    /* 1行の場合 */
+    console.log(`${timestamp} ${chalk.bold(`${message.senderName}:`)} ${container[0]}`);
+    return false;
+  }
+
+  /* 複数行の場合 */
+  console.log(`${timestamp} ${chalk.bold(message.senderName)}:`);
+  for (let i = 0; i < container.length; i++) {
+    const c = container[i];
+    console.log(`${((i + 1) === container.length) ? '`' : '|'} ${c}`);
+  }
+}
+
+function coloring(markdown, message) {
   const lines = markdown.split('\n');
   const { file_urls: files = [] } = message;
   const colored = [];
@@ -74,7 +82,7 @@ function coloring(markdown, message) {
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
 
-    /* code block */
+    /* code blockの判定。トリプルバッククオートがヒットするたびにフラグを切り替え、フラグが立っている場合は他カラーリング処理を行わない */
     if (line === '```') {
       inCodeBlock = !inCodeBlock;
       colored.push(inCodeBlock ? chalk.bgBlackBright(line) : '');
@@ -95,23 +103,14 @@ function coloring(markdown, message) {
           a.push(chalk.bgBlackBright(l));
           continue;
         }
-        /* blockquote */
-        l = replacer(l, 'blockquote');
-        /* link */
+        l = replacer(l, 'backquote');
         l = replacer(l, 'link');
-        /* image */
         l = replacer(l, 'image');
-        /* mention */
         l = replacer(l, 'mention');
-        /* strong */
         l = replacer(l, 'strong');
-        /* strikethrough */
         l = replacer(l, 'strikethrough');
-        /* bullet list */
         l = replacer(l, 'bulletList');
-        /* order list */
         l = replacer(l, 'orderList');
-        /* header */
         l = replacer(l, 'header');
         a.push(l);
       }
@@ -120,23 +119,14 @@ function coloring(markdown, message) {
       continue;
     }
 
-    /* blockquote */
-    line = replacer(line, 'blockquote');
-    /* link */
+    line = replacer(line, 'backquote');
     line = replacer(line, 'link');
-    /* image */
     line = replacer(line, 'image');
-    /* mention */
     line = replacer(line, 'mention');
-    /* strong */
     line = replacer(line, 'strong');
-    /* strikethrough */
     line = replacer(line, 'strikethrough');
-    /* bullet list */
     line = replacer(line, 'bulletList');
-    /* order list */
     line = replacer(line, 'orderList');
-    /* header */
     line = replacer(line, 'header');
 
     colored.push(line);
@@ -146,7 +136,7 @@ function coloring(markdown, message) {
 
   function replacer(line, mode) {
     const modes = {
-      'blockquote': {
+      'backquote': {
         /* コードブロック */
         pattern: /^(\s*)\>\s/g,
         fn: (_, ...hit) => `${hit[0]}${chalk.bgBlackBright('>')} `
